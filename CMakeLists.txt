@@ -29,7 +29,9 @@ target_include_directories(app PRIVATE src/)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-target_link_libraries(app PRIVATE glad OpenGL::GL glfw imgui)
+find_package(X11 REQUIRED)
+
+target_link_libraries(app PRIVATE glad OpenGL::GL glfw imgui X11)
 
 add_custom_command(TARGET app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:app>/fonts

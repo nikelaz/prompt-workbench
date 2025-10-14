@@ -65,6 +65,7 @@ void app::initImGui() {
 
     ImGuiIO& io = ImGui::GetIO(); 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     setFonts(&io);
 
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -96,36 +97,17 @@ void app::renderLoop() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // main frame
-        {
-            ImGui::SetNextWindowPos(ImVec2(0, 0));
-            ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-
-            ImGui::Begin(
-                "MainWindow",
-                nullptr,
-                ImGuiWindowFlags_NoTitleBar |
-                ImGuiWindowFlags_NoResize |
-                ImGuiWindowFlags_NoMove |
-                ImGuiWindowFlags_NoCollapse |
-                ImGuiWindowFlags_NoBringToFrontOnFocus |
-                ImGuiWindowFlags_NoNavFocus |
-                ImGuiWindowFlags_NoDecoration
-            ); 
-
-            ui::button("Hello Button!");
-            ImGui::Text(
-                "Application average %.3f ms/frame (%.1f FPS)",
-                1000.0f / io.Framerate,
-                io.Framerate
-            );
-
-            ImGui::End();
-        }
+        ui::mainFrame();
 
         ImGui::Render();
 
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClearColor(
+            clear_color.x * clear_color.w,
+            clear_color.y * clear_color.w,
+            clear_color.z * clear_color.w,
+            clear_color.w
+        );
+
         glClear(GL_COLOR_BUFFER_BIT);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

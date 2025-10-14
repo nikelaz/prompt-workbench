@@ -48,20 +48,21 @@ void theme::applyColorScheme()
     colors[ImGuiCol_ResizeGripHovered]      = hexColor(0xFFFFFF, 0.07f); 
     colors[ImGuiCol_ResizeGripActive]       = hexColor(0xFFFFFF, 0.05f); 
     colors[ImGuiCol_InputTextCursor]        = colors[ImGuiCol_Text];
-    colors[ImGuiCol_TabHovered]             = colors[ImGuiCol_HeaderHovered];
-    //colors[ImGuiCol_Tab]                    = ImLerp(colors[ImGuiCol_Header],       colors[ImGuiCol_TitleBgActive], 0.80f);
-    //colors[ImGuiCol_TabSelected]            = ImLerp(colors[ImGuiCol_HeaderActive], colors[ImGuiCol_TitleBgActive], 0.60f);
-    colors[ImGuiCol_TabSelectedOverline]    = colors[ImGuiCol_HeaderActive];
-    //colors[ImGuiCol_TabDimmed]              = ImLerp(colors[ImGuiCol_Tab],          colors[ImGuiCol_TitleBg], 0.80f);
-    //colors[ImGuiCol_TabDimmedSelected]      = ImLerp(colors[ImGuiCol_TabSelected],  colors[ImGuiCol_TitleBg], 0.40f);
-    colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4(0.50f, 0.50f, 0.50f, 0.00f);
+    colors[ImGuiCol_Tab]                    = hexColor(0xFFFFFF, 0.05f);
+    colors[ImGuiCol_TabHovered]             = hexColor(0xFFFFFF, 0.07f); 
+    colors[ImGuiCol_TabSelected]            = hexColor(0xFFFFFF, 0.09f); 
+    colors[ImGuiCol_TabSelectedOverline]    = hexColor(0xFFFFFF, 0.05f); 
+    colors[ImGuiCol_TabDimmed]              = hexColor(0xFFFFFF, 0.05f); 
+    colors[ImGuiCol_TabDimmedSelected]      = hexColor(0xFFFFFF, 0.07f); 
+    colors[ImGuiCol_TabDimmedSelectedOverline] = hexColor(0xFFFFFF, 0.09f);
+
     colors[ImGuiCol_PlotLines]              = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
     colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
     colors[ImGuiCol_PlotHistogram]          = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
     colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
     colors[ImGuiCol_TableHeaderBg]          = ImVec4(0.19f, 0.19f, 0.20f, 1.00f);
-    colors[ImGuiCol_TableBorderStrong]      = ImVec4(0.31f, 0.31f, 0.35f, 1.00f);   // Prefer using Alpha=1.0 here
-    colors[ImGuiCol_TableBorderLight]       = ImVec4(0.23f, 0.23f, 0.25f, 1.00f);   // Prefer using Alpha=1.0 here
+    colors[ImGuiCol_TableBorderStrong]      = ImVec4(0.31f, 0.31f, 0.35f, 1.00f);
+    colors[ImGuiCol_TableBorderLight]       = ImVec4(0.23f, 0.23f, 0.25f, 1.00f);
     colors[ImGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
     colors[ImGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
     colors[ImGuiCol_TextLink]               = colors[ImGuiCol_HeaderActive];
