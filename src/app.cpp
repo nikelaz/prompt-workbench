@@ -7,6 +7,7 @@
 #include "imgui_impl_opengl3.h"
 #include "ui.h"
 #include "app.h"
+#include "theme.h"
 
 void app::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -60,7 +61,8 @@ void app::initImGui() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    ImGui::StyleColorsDark();
+    theme::applyColorScheme();
+
     ImGuiIO& io = ImGui::GetIO(); 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     setFonts(&io);

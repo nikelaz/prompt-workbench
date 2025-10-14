@@ -24,7 +24,7 @@ target_include_directories(glad PUBLIC external/glad/include)
 
 find_package(OpenGL REQUIRED)
 
-add_executable(app src/main.cpp src/app.cpp src/ui.cpp)
+add_executable(app src/main.cpp src/app.cpp src/theme.cpp src/ui.cpp)
 target_include_directories(app PRIVATE src/)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
