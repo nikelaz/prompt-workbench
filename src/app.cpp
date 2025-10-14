@@ -24,7 +24,7 @@ int app::createWindow() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    state.window = glfwCreateWindow(state.width, state.height, "Hello World", NULL, NULL);
+    state.window = glfwCreateWindow(state.width, state.height, "Prompt Workbench", NULL, NULL);
 
     if (!state.window)
     {

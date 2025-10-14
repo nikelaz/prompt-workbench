@@ -31,6 +31,69 @@ bool sidebarButton(const char* label, const bool isActive = false) {
   return clicked;
 }
 
+bool card(
+    const char* id,
+    const char* headline,
+    const char* subtext = nullptr,
+    const char* rightLabel = nullptr
+) {
+    ImVec2 padding = ImVec2(20, 12);
+    float rounding = 5.0f;
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, rounding);
+    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
+
+    ImGui::PushStyleColor(ImGuiCol_Button, helpers::hexColor(0xFFFFFF, 0.05f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, helpers::hexColor(0xFFFFFF, 0.07f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, helpers::hexColor(0xFFFFFF, 0.05f));
+    ImVec2 start = ImGui::GetCursorScreenPos();
+    ImVec2 cardSize = ImVec2(ImGui::GetContentRegionAvail().x, 60);
+
+    ImGui::InvisibleButton(id, cardSize); 
+    bool clicked = ImGui::IsItemClicked();
+    bool hovered = ImGui::IsItemHovered();
+    bool active = ImGui::IsItemActive();
+
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    ImU32 bgColor = ImGui::GetColorU32(ImGuiCol_Button);
+
+    if (hovered) bgColor = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+    if (active) bgColor = ImGui::GetColorU32(ImGuiCol_ButtonActive);
+
+    drawList->AddRectFilled(
+        start,
+        ImVec2(start.x + cardSize.x, start.y + cardSize.y),
+        bgColor,
+        5.0f
+    );
+
+    ImGui::SetCursorScreenPos(ImVec2(start.x + 16, start.y + 12));
+    ImGui::Text("%s", headline);
+
+    if (subtext)
+    {
+        ImGui::SetCursorScreenPos(ImVec2(start.x + 16, start.y + 32));
+        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 180, 180, 255));
+        ImGui::Text("%s", subtext);
+        ImGui::PopStyleColor();
+    }
+
+    if (rightLabel)
+    {
+        ImVec2 rightTextSize = ImGui::CalcTextSize(rightLabel);
+        ImGui::SetCursorScreenPos(ImVec2(start.x + cardSize.x - rightTextSize.x - 16, start.y + 22));
+        ImGui::Text("%s", rightLabel);
+    }
+
+    ImGui::SetCursorScreenPos(ImVec2(start.x, start.y + cardSize.y));
+    ImGui::PopStyleVar(3);
+    ImGui::PopStyleColor(3);
+
+    ImGui::Dummy(ImVec2(6, 6));
+    return clicked;
+}
+
 void dockSpace() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::Begin(
@@ -119,23 +182,29 @@ void mainContent(std::function<void()> children)
 }
 
 enum Route {
-  PAGE_1,
+  PAGE_TEST_SUITES,
   PAGE_2,
   PAGE_3
 };
 
+void testSuitesPage() {
+    card("card1", "Test Suite #1", "Another label 1", "Third label 1");
+    card("card2", "Test Suite #2");
+    card("card3", "Text Suite #3", "Another label 3", "Third label 3");
+}
+
 void ui::mainFrame()
 {
-    static Route currentRoute = PAGE_1;
+    static Route currentRoute = PAGE_TEST_SUITES;
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
     
     dockSpace();
 
     sidebar([]() {
-        if (sidebarButton("Page 1", currentRoute == PAGE_1))
+        if (sidebarButton("Test Suites", currentRoute == PAGE_TEST_SUITES))
         {
-            currentRoute = PAGE_1;
+            currentRoute = PAGE_TEST_SUITES;
         }
 
         if (sidebarButton("Page 2", currentRoute == PAGE_2))
@@ -151,8 +220,8 @@ void ui::mainFrame()
 
     mainContent([&]() {
         switch(currentRoute) {
-            case PAGE_1:
-                ImGui::Text("Page 1");
+            case PAGE_TEST_SUITES:
+                testSuitesPage();
                 break;
             case PAGE_2:
                 ImGui::Text("Page 2");
