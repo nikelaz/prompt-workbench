@@ -9,7 +9,7 @@
 #include "app.h"
 #include "theme.h"
 
-void app::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
@@ -35,7 +35,7 @@ int app::createWindow() {
     glfwMakeContextCurrent(state.window);
     glfwSwapInterval(1);
 
-    glfwSetFramebufferSizeCallback(state.window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(state.window, framebufferSizeCallback);
 
     return 0;
 }
@@ -81,7 +81,6 @@ void app::initImGui() {
 }
 
 void app::renderLoop() {
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     ImGuiIO& io = ImGui::GetIO(); 
 
     while (!glfwWindowShouldClose(state.window))
@@ -102,10 +101,10 @@ void app::renderLoop() {
         ImGui::Render();
 
         glClearColor(
-            clear_color.x * clear_color.w,
-            clear_color.y * clear_color.w,
-            clear_color.z * clear_color.w,
-            clear_color.w
+            state.clearColor.x * state.clearColor.w,
+            state.clearColor.y * state.clearColor.w,
+            state.clearColor.z * state.clearColor.w,
+            state.clearColor.w
         );
 
         glClear(GL_COLOR_BUFFER_BIT);
