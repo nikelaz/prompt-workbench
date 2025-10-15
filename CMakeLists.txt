@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(external/glfw)
+add_subdirectory(external/json)
 
 add_library(imgui STATIC
     external/imgui/imgui.cpp
@@ -35,12 +36,18 @@ target_include_directories(app PRIVATE src/)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    find_package(X11 REQUIRED)
-    target_link_libraries(app PRIVATE X11)
-endif()
+target_link_libraries(app PRIVATE
+  glad
+  OpenGL::GL
+  glfw
+  imgui
+  nlohmann_json::nlohmann_json
+)
 
-target_link_libraries(app PRIVATE glad OpenGL::GL glfw imgui)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  find_package(X11 REQUIRED)
+  target_link_libraries(app PRIVATE X11)
+endif()
 
 add_custom_command(TARGET app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:app>/fonts
