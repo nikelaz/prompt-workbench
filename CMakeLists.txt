@@ -31,6 +31,7 @@ add_executable(app
     src/theme.cpp
     src/ui.cpp
     src/helpers.cpp
+    src/api.cpp
 )
 
 target_include_directories(app PRIVATE src/)
