@@ -57,7 +57,7 @@ target_link_libraries(app PRIVATE
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   find_package(X11 REQUIRED)
-  target_link_libraries(app PRIVATE X11)
+  target_link_libraries(app PRIVATE X11 unistring)
 endif()
 
 add_custom_command(TARGET app POST_BUILD
