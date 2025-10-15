@@ -53,7 +53,7 @@ void app::setFonts(ImGuiIO *io) {
     io->Fonts->Clear(); 
     std::filesystem::path exePath = std::filesystem::current_path();
     std::filesystem::path fontPath = exePath / "fonts" / "Inter-Regular.ttf";
-    ImFont* font_regular = io->Fonts->AddFontFromFileTTF(fontPath.c_str(), 16.0f);
+    ImFont* font_regular = io->Fonts->AddFontFromFileTTF(fontPath.string().c_str(), 16.0f);
     io->FontDefault = font_regular;
 }
 
