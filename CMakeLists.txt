@@ -24,6 +24,7 @@ add_library(glad STATIC external/glad/src/glad.c)
 target_include_directories(glad PUBLIC external/glad/include)
 
 find_package(OpenGL REQUIRED)
+find_package(SQLite3 REQUIRED)
 
 add_executable(app
     src/main.cpp
@@ -36,6 +37,11 @@ add_executable(app
 
 target_include_directories(app PRIVATE src/)
 
+target_include_directories(app PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/sqlite_modern_cpp
+    ${SQLite3_INCLUDE_DIRS}
+)
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 
 target_link_libraries(app PRIVATE
@@ -45,6 +51,7 @@ target_link_libraries(app PRIVATE
   imgui
   nlohmann_json::nlohmann_json
   cpr::cpr
+  ${SQLite3_LIBRARIES}
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
