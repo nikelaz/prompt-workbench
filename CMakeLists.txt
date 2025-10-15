@@ -33,6 +33,7 @@ add_executable(app
     src/ui.cpp
     src/helpers.cpp
     src/api.cpp
+    src/dba.cpp
 )
 
 target_include_directories(app PRIVATE src/)
