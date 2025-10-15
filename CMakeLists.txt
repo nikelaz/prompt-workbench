@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(external/glfw)
+add_subdirectory(external/cpr)
 add_subdirectory(external/json)
 
 add_library(imgui STATIC
@@ -42,6 +43,7 @@ target_link_libraries(app PRIVATE
   glfw
   imgui
   nlohmann_json::nlohmann_json
+  cpr::cpr
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
