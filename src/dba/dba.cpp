@@ -2,8 +2,8 @@
 #include <iostream>
 
 using std::string;
-using std::optional;
-using std::vector;
+
+std::unique_ptr<sqlite::database> dba::db;
 
 void dba::create_tables() {
     (*db) << R"(

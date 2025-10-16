@@ -19,26 +19,26 @@ struct UserPrompt
 {
     int64_t id;
     std::string prompt;
-    int test_suite_id;
+    int64_t test_suite_id;
 };
 
 struct ResultRun
 {
     int64_t id;
     std::string date;
-    int test_suite_id;
+    int64_t test_suite_id;
 };
 
 struct Answer
 {
     int64_t id;
     std::string answer;
-    int result_run_id;
+    int64_t result_run_id;
 };
 
 namespace dba
 {
-    static std::unique_ptr<sqlite::database> db;
+    extern std::unique_ptr<sqlite::database> db;
     
     // Initialization
     void create_tables();
@@ -63,7 +63,6 @@ namespace dba
     bool delete_test_suite(int64_t id);
 
     // User Prompts
-    /*
     std::optional<int64_t> create_user_prompt(
         const std::string& prompt, 
         int64_t test_suite_id
@@ -76,5 +75,4 @@ namespace dba
         std::optional<int64_t> test_suite_id
     );
     bool delete_user_prompt(int64_t id);
-    */
 }

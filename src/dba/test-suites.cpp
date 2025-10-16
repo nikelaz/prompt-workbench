@@ -12,6 +12,8 @@ optional<int64_t> dba::create_test_suite(
     const string& model
 )
 {
+    if (!db) throw std::runtime_error("DB not initialized yet");
+
     try
     {
         (*db) << R"(
