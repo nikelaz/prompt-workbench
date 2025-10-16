@@ -8,7 +8,7 @@
 
 struct TestSuite
 {
-    int id;
+    int64_t id;
     std::string title;
     std::string description;
     std::string system_prompt;
@@ -17,21 +17,21 @@ struct TestSuite
 
 struct UserPrompt
 {
-    int id;
+    int64_t id;
     std::string prompt;
     int test_suite_id;
 };
 
 struct ResultRun
 {
-    int id;
+    int64_t id;
     std::string date;
     int test_suite_id;
 };
 
 struct Answer
 {
-    int id;
+    int64_t id;
     std::string answer;
     int result_run_id;
 };
@@ -45,36 +45,36 @@ namespace dba
     bool init(const std::string& db_path);
 
     // Test Suites 
-    int create_test_suite(
+    std::optional<int64_t> create_test_suite(
         const std::string& title, 
         const std::string& description,
         const std::string& system_prompt,
         const std::string& model
     );
-    std::unique_ptr<TestSuite> get_test_suite(int id);
+    std::optional<TestSuite> get_test_suite(int64_t id);
     std::vector<TestSuite> get_all_test_suites();
-    void update_test_suite(
-        int id,
-        const std::string* title = nullptr,
-        const std::string* description = nullptr,
-        const std::string* system_prompt = nullptr,
-        const std::string* model = nullptr
+    bool update_test_suite(
+        int64_t id,
+        const std::optional<std::string>& title,
+        const std::optional<std::string>& description,
+        const std::optional<std::string>& system_prompt,
+        const std::optional<std::string>& model
     );
-    void delete_test_suite(int id);
+    bool delete_test_suite(int64_t id);
 
     // User Prompts
-    int create_user_prompt(
+    /*
+    std::optional<int64_t> create_user_prompt(
         const std::string& prompt, 
-        int test_suite_id
+        int64_t test_suite_id
     );
-    std::unique_ptr<UserPrompt> get_user_prompt(int id);   
+    std::optional<UserPrompt> get_user_prompt(int64_t id);   
     std::vector<UserPrompt> get_all_user_prompts(); 
-    void update_user_prompt(
-        int id,
-        const std::string* prompt = nullptr, 
-        // Todo: I don't like this at -1, seems arbitrary,
-        // research a better option
-        int test_suite_id = -1
+    bool update_user_prompt(
+        int64_t id,
+        const std::optional<std::string>& prompt, 
+        std::optional<int64_t> test_suite_id
     );
-    void delete_user_prompt(int id);
+    bool delete_user_prompt(int64_t id);
+    */
 }

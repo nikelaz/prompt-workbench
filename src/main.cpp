@@ -6,7 +6,8 @@ int main(void)
 {
     dba::init("data.db"); 
 
-    std::unique_ptr<TestSuite> test_suite = dba::get_test_suite(1);
+    /*
+    std::optional<TestSuite> test_suite = dba::get_test_suite(1);
     std::cout << "Title: " << test_suite->title << std::endl;
     std::cout << "Description: " << test_suite->description << std::endl;
     std::cout << "System Prompt: " << test_suite->system_prompt << std::endl;
@@ -17,6 +18,7 @@ int main(void)
     for (TestSuite ts : test_suites) {
         std::cout << "Title: " << test_suite->title << std::endl;
     }
+    */
 
     app::AppState options;
     app::init(options);

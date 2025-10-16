@@ -33,10 +33,11 @@ add_executable(app
     src/ui.cpp
     src/helpers.cpp
     src/api.cpp
-    src/dba.cpp
+    src/dba/dba.cpp
+    src/dba/test-suites.cpp
 )
 
-target_include_directories(app PRIVATE src/)
+target_include_directories(app PRIVATE src/ src/dba)
 
 target_include_directories(app PRIVATE
     ${CMAKE_SOURCE_DIR}/external/sqlite_modern_cpp
