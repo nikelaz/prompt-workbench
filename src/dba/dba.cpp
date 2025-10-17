@@ -3,10 +3,8 @@
 
 using std::string;
 
-std::unique_ptr<sqlite::database> dba::db;
-
-void dba::create_tables() {
-    (*db) << R"(
+void dba::create_tables(DBAState& state) {
+    (*state.db) << R"(
         CREATE TABLE IF NOT EXISTS test_suites (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -16,7 +14,7 @@ void dba::create_tables() {
         );
     )";
 
-    (*db) << R"(
+    (*state.db) << R"(
         CREATE TABLE IF NOT EXISTS user_prompts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         prompt TEXT NOT NULL,
@@ -25,7 +23,7 @@ void dba::create_tables() {
         );
     )";
 
-    (*db) << R"(
+    (*state.db) << R"(
         CREATE TABLE IF NOT EXISTS result_runs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL,
@@ -34,7 +32,7 @@ void dba::create_tables() {
         );
     )";
 
-    (*db) << R"(
+    (*state.db) << R"(
         CREATE TABLE IF NOT EXISTS answers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         answer TEXT NOT NULL,
@@ -46,13 +44,13 @@ void dba::create_tables() {
     )";
 }
 
-bool dba::init(const string& db_path)
+bool dba::init(DBAState& state, const string& db_path)
 {
     try
     {
-        db = std::make_unique<sqlite::database>(db_path);
-        (*db) << "PRAGMA foreign_keys = ON;";
-        dba::create_tables();
+        state.db = std::make_unique<sqlite::database>(db_path);
+        (*state.db) << "PRAGMA foreign_keys = ON;";
+        dba::create_tables(state);
     }
     catch (const std::exception& e)
     {
@@ -61,4 +59,9 @@ bool dba::init(const string& db_path)
     }
 
     return true;
+}
+
+void dba::deinit(DBAState& state)
+{
+    state.db.reset();
 }

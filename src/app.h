@@ -11,13 +11,7 @@ namespace app {
         ImVec4 clearColor = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
     };
 
-    inline AppState state;
-
-    int createWindow(); 
-    int initGlad();
-    void setFonts(ImGuiIO *io);
-    void initImGui();
-    void renderLoop();
     int init(AppState&);
-    int shutdown();
+    void render_loop(AppState&);
+    void deinit();
 }

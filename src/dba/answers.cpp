@@ -7,6 +7,7 @@ using std::optional;
 using std::vector;
 
 optional<int64_t> dba::create_answer(
+    DBAState& state,
     const string& answer, 
     int64_t user_prompt_id,
     int64_t result_run_id
@@ -14,7 +15,7 @@ optional<int64_t> dba::create_answer(
 {
     try
     {
-        (*db) << R"(
+        (*state.db) << R"(
             INSERT INTO answers 
             (answer, user_prompt_id, result_run_id)
             values (?, ?, ?)
@@ -23,7 +24,7 @@ optional<int64_t> dba::create_answer(
             << user_prompt_id
             << result_run_id;
 
-        return db->last_insert_rowid();
+        return state.db->last_insert_rowid();
     } 
     catch (const std::exception& e)
     {
@@ -32,11 +33,11 @@ optional<int64_t> dba::create_answer(
     }
 }
 
-optional<Answer> dba::get_answer(int64_t id) 
+optional<Answer> dba::get_answer(DBAState& state, int64_t id) 
 {
     optional<Answer> result;
 
-    (*db) << R"( 
+    (*state.db) << R"( 
         SELECT
         answer, user_prompt_id, result_run_id
         FROM answers 
@@ -60,11 +61,11 @@ optional<Answer> dba::get_answer(int64_t id)
     return result;
 }
 
-vector<Answer> dba::get_all_answers() 
+vector<Answer> dba::get_all_answers(DBAState& state) 
 {
     vector<Answer> answers;
 
-    (*db) << R"( 
+    (*state.db) << R"( 
         SELECT
         id, answer, user_prompt_id, result_run_id
         FROM result_runs;
@@ -88,6 +89,7 @@ vector<Answer> dba::get_all_answers()
 }
 
 bool dba::update_answer(
+    DBAState& state,
     int64_t id,
     const optional<string>& answer, 
     optional<int64_t> user_prompt_id,
@@ -130,7 +132,7 @@ bool dba::update_answer(
 
         sql += " WHERE id = ?;";
 
-        auto stmt = (*db) << sql;
+        auto stmt = (*state.db) << sql;
         for (auto& [col, val] : updates)
         {
             stmt << val;
@@ -147,11 +149,11 @@ bool dba::update_answer(
     }
 }
 
-bool dba::delete_answer(int64_t id)
+bool dba::delete_answer(DBAState& state, int64_t id)
 {
     try
     {
-        (*db) << R"(
+        (*state.db) << R"(
             DELETE FROM answers 
             WHERE id = ?
         )"

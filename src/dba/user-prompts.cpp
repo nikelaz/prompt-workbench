@@ -7,13 +7,14 @@ using std::optional;
 using std::vector;
 
 optional<int64_t> dba::create_user_prompt(
+    DBAState& state,
     const string& prompt, 
     int64_t test_suite_id
 )
 {
     try
     {
-        (*db) << R"(
+        (*state.db) << R"(
             INSERT INTO user_prompts
             (prompt, test_suite_id)
             values (?, ?)
@@ -21,7 +22,7 @@ optional<int64_t> dba::create_user_prompt(
             << prompt
             << test_suite_id;
 
-        return db->last_insert_rowid();
+        return state.db->last_insert_rowid();
     } 
     catch (const std::exception& e)
     {
@@ -30,11 +31,11 @@ optional<int64_t> dba::create_user_prompt(
     }
 }
 
-optional<UserPrompt> dba::get_user_prompt(int64_t id) 
+optional<UserPrompt> dba::get_user_prompt(DBAState& state, int64_t id) 
 {
     optional<UserPrompt> result;
 
-    (*db) << R"( 
+    (*state.db) << R"( 
         SELECT
         prompt, test_suite_id
         FROM user_prompts
@@ -56,11 +57,11 @@ optional<UserPrompt> dba::get_user_prompt(int64_t id)
     return result;
 }
 
-vector<UserPrompt> dba::get_all_user_prompts() 
+vector<UserPrompt> dba::get_all_user_prompts(DBAState& state) 
 {
     vector<UserPrompt> user_prompts;
 
-    (*db) << R"( 
+    (*state.db) << R"( 
         SELECT
         id, prompt, test_suite_id
         FROM user_prompts;
@@ -82,6 +83,7 @@ vector<UserPrompt> dba::get_all_user_prompts()
 }
 
 bool dba::update_user_prompt(
+    DBAState& state,
     int64_t id,
     const optional<string>& prompt, 
     optional<int64_t> test_suite_id
@@ -118,7 +120,7 @@ bool dba::update_user_prompt(
 
         sql += " WHERE id = ?;";
 
-        auto stmt = (*db) << sql;
+        auto stmt = (*state.db) << sql;
         for (auto& [col, val] : updates)
         {
             stmt << val;
@@ -135,11 +137,11 @@ bool dba::update_user_prompt(
     }
 }
 
-bool dba::delete_user_prompt(int64_t id)
+bool dba::delete_user_prompt(DBAState& state, int64_t id)
 {
     try
     {
-        (*db) << R"(
+        (*state.db) << R"(
             DELETE FROM user_prompts
             WHERE id = ?
         )"

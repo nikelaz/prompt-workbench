@@ -6,17 +6,16 @@ using std::optional;
 using std::vector;
 
 optional<int64_t> dba::create_test_suite(
+    DBAState& state,
     const string& title, 
     const string& description,
     const string& system_prompt,
     const string& model
 )
 {
-    if (!db) throw std::runtime_error("DB not initialized yet");
-
     try
     {
-        (*db) << R"(
+        (*state.db) << R"(
             INSERT INTO test_suites
             (title, description, system_prompt, model)
             values (?, ?, ?, ?)
@@ -26,7 +25,7 @@ optional<int64_t> dba::create_test_suite(
             << system_prompt
             << model;
 
-        return db->last_insert_rowid();
+        return state.db->last_insert_rowid();
     } 
     catch (const std::exception& e)
     {
@@ -35,11 +34,11 @@ optional<int64_t> dba::create_test_suite(
     }
 }
 
-optional<TestSuite> dba::get_test_suite(int64_t id)
+optional<TestSuite> dba::get_test_suite(DBAState& state, int64_t id)
 {
     optional<TestSuite> result;
 
-    (*db) << R"( 
+    (*state.db) << R"( 
         SELECT
         title, description, system_prompt, model
         FROM test_suites
@@ -65,11 +64,11 @@ optional<TestSuite> dba::get_test_suite(int64_t id)
     return result;
 }
 
-vector<TestSuite> dba::get_all_test_suites()
+vector<TestSuite> dba::get_all_test_suites(DBAState& state)
 {
     vector<TestSuite> test_suites;
 
-    (*db) << R"( 
+    (*state.db) << R"( 
         SELECT
         id, title, description, system_prompt, model
         FROM test_suites;
@@ -96,6 +95,7 @@ vector<TestSuite> dba::get_all_test_suites()
 
 
 bool dba::update_test_suite(
+    DBAState& state,
     int64_t id,
     const optional<string>& title,
     const optional<string>& description,
@@ -129,7 +129,7 @@ bool dba::update_test_suite(
 
         sql += " WHERE id = ?;";
 
-        auto stmt = (*db) << sql;
+        auto stmt = (*state.db) << sql;
         for (auto& [col, val] : updates)
         {
             stmt << val;
@@ -146,11 +146,11 @@ bool dba::update_test_suite(
     }
 }
 
-bool dba::delete_test_suite(int64_t id)
+bool dba::delete_test_suite(DBAState& state, int64_t id)
 {
     try
     {
-        (*db) << R"(
+        (*state.db) << R"(
             DELETE FROM test_suites
             WHERE id = ?
         )"

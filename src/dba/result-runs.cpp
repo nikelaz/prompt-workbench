@@ -7,13 +7,14 @@ using std::optional;
 using std::vector;
 
 optional<int64_t> dba::create_result_run(
+    DBAState& state,
     const string& date, 
     int64_t test_suite_id
 )
 {
     try
     {
-        (*db) << R"(
+        (*state.db) << R"(
             INSERT INTO result_runs
             (date, test_suite_id)
             values (?, ?)
@@ -21,7 +22,7 @@ optional<int64_t> dba::create_result_run(
             << date
             << test_suite_id;
 
-        return db->last_insert_rowid();
+        return state.db->last_insert_rowid();
     } 
     catch (const std::exception& e)
     {
@@ -30,11 +31,11 @@ optional<int64_t> dba::create_result_run(
     }
 }
 
-optional<ResultRun> dba::get_result_run(int64_t id) 
+optional<ResultRun> dba::get_result_run(DBAState& state, int64_t id) 
 {
     optional<ResultRun> result;
 
-    (*db) << R"( 
+    (*state.db) << R"( 
         SELECT
         date, test_suite_id
         FROM result_runs 
@@ -56,11 +57,11 @@ optional<ResultRun> dba::get_result_run(int64_t id)
     return result;
 }
 
-vector<ResultRun> dba::get_all_result_runs() 
+vector<ResultRun> dba::get_all_result_runs(DBAState& state) 
 {
     vector<ResultRun> result_runs;
 
-    (*db) << R"( 
+    (*state.db) << R"( 
         SELECT
         id, date, test_suite_id
         FROM result_runs;
@@ -82,6 +83,7 @@ vector<ResultRun> dba::get_all_result_runs()
 }
 
 bool dba::update_result_run(
+    DBAState& state,
     int64_t id,
     const optional<string>& date, 
     optional<int64_t> test_suite_id
@@ -118,7 +120,7 @@ bool dba::update_result_run(
 
         sql += " WHERE id = ?;";
 
-        auto stmt = (*db) << sql;
+        auto stmt = (*state.db) << sql;
         for (auto& [col, val] : updates)
         {
             stmt << val;
@@ -135,11 +137,11 @@ bool dba::update_result_run(
     }
 }
 
-bool dba::delete_result_run(int64_t id)
+bool dba::delete_result_run(DBAState& state, int64_t id)
 {
     try
     {
-        (*db) << R"(
+        (*state.db) << R"(
             DELETE FROM result_runs
             WHERE id = ?
         )"
