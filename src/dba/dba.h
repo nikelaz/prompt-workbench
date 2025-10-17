@@ -75,4 +75,19 @@ namespace dba
         std::optional<int64_t> test_suite_id
     );
     bool delete_user_prompt(int64_t id);
+
+
+    // Result Runs
+    std::optional<int64_t> create_result_run(
+        const std::string& date, 
+        int64_t test_suite_id
+    );
+    std::optional<ResultRun> get_result_run(int64_t id);   
+    std::vector<ResultRun> get_all_result_runs(); 
+    bool update_result_run(
+        int64_t id,
+        const std::optional<std::string>& date, 
+        std::optional<int64_t> test_suite_id
+    );
+    bool delete_result_run(int64_t id);
 }
