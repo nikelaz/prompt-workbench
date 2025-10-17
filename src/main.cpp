@@ -9,7 +9,7 @@ int main(void)
     
     app::AppState app_state;
     app::init(app_state);
-    app::render_loop(app_state);
+    app::render_loop(app_state, dba_state);
 
     dba::deinit(dba_state);
     app::deinit();

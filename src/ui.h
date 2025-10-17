@@ -1,7 +1,8 @@
 #pragma once
 
+#include "view-models.h"
+
 namespace ui {
-    void init_view_models();
-    bool button(const char*); 
-    void mainFrame();
+    bool button(const std::string&); 
+    void main_frame(vm::test_suites::TestSuitesViewModel& test_suites_vm);
 }

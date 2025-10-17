@@ -93,18 +93,18 @@ void init_imgui(app::AppState& state)
 
     ImGui_ImplGlfw_InitForOpenGL(state.window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
-
-    ui::init_view_models();
 }
 
-void app::render_loop(AppState& state)
+void app::render_loop(AppState& app_state, dba::DBAState& dba_state)
 {
     ImGuiIO& io = ImGui::GetIO(); 
+    vm::test_suites::TestSuitesViewModel test_suites_vm = 
+        vm::test_suites::init(dba_state);
 
-    while (!glfwWindowShouldClose(state.window))
+    while (!glfwWindowShouldClose(app_state.window))
     {
         glfwWaitEvents();
-        if (glfwGetWindowAttrib(state.window, GLFW_ICONIFIED) != 0)
+        if (glfwGetWindowAttrib(app_state.window, GLFW_ICONIFIED) != 0)
         {
             ImGui_ImplGlfw_Sleep(10);
             continue;
@@ -114,22 +114,22 @@ void app::render_loop(AppState& state)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ui::mainFrame();
+        ui::main_frame(test_suites_vm);
 
         ImGui::Render();
 
         glClearColor(
-            state.clearColor.x * state.clearColor.w,
-            state.clearColor.y * state.clearColor.w,
-            state.clearColor.z * state.clearColor.w,
-            state.clearColor.w
+            app_state.clearColor.x * app_state.clearColor.w,
+            app_state.clearColor.y * app_state.clearColor.w,
+            app_state.clearColor.z * app_state.clearColor.w,
+            app_state.clearColor.w
         );
 
         glClear(GL_COLOR_BUFFER_BIT);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapBuffers(state.window);
+        glfwSwapBuffers(app_state.window);
     }
 }
 

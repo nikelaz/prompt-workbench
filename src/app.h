@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h"
+#include "dba.h"
 #include <GLFW/glfw3.h>
 
 namespace app {
@@ -12,6 +13,6 @@ namespace app {
     };
 
     int init(AppState&);
-    void render_loop(AppState&);
+    void render_loop(AppState&, dba::DBAState&);
     void deinit();
 }

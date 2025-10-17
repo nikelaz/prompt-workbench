@@ -1,73 +1,98 @@
 #include <functional>
-#include <iostream>
 #include "ui.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "helpers.h"
 #include "view-models.h"
 
-bool ui::button(const char* label) 
+bool ui::button(const std::string& label) 
 {
-  ImVec2 padding = ImVec2(18, 7);
-  float rounding = 5.0f;
-  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
-  ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, rounding);
-  bool clicked = ImGui::Button(label);
-  ImGui::PopStyleVar(2);
-  return clicked;
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(18, 7));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+
+    bool clicked = ImGui::Button(label.c_str());
+
+    ImGui::PopStyleVar(2);
+
+    return clicked;
 }
 
-bool sidebarButton(const char* label, const bool isActive = false) {
-  ImVec2 padding = ImVec2(20, 12);
-  float rounding = 5.0f;
-  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
-  ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, rounding);
-  ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
+bool sidebar_button(
+    const std::string& label,
+    const bool is_active = false
+)
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20, 12));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
 
-  ImVec4 buttonColor = isActive ? helpers::hexColor(0xFFFFFF, 0.05f) : helpers::hexColor(0xFFFFFF, 0.00f);
-  ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
-  ImGui::PushStyleColor(ImGuiCol_ButtonHovered, helpers::hexColor(0xFFFFFF, 0.05f));
-  ImGui::PushStyleColor(ImGuiCol_ButtonActive, helpers::hexColor(0xFFFFFF, 0.03f));
-  bool clicked = ImGui::Button(label, ImVec2(-FLT_MIN, 0));
-  ImGui::PopStyleVar(3);
-  ImGui::PopStyleColor(3);
-  return clicked;
+    ImVec4 button_color =
+        is_active
+        ? helpers::hexColor(0xFFFFFF, 0.05f)
+        : helpers::hexColor(0xFFFFFF, 0.00f);
+
+    ImGui::PushStyleColor(ImGuiCol_Button, button_color);
+    ImGui::PushStyleColor(
+        ImGuiCol_ButtonHovered,
+        helpers::hexColor(0xFFFFFF, 0.05f)
+    );
+    ImGui::PushStyleColor(
+        ImGuiCol_ButtonActive,
+        helpers::hexColor(0xFFFFFF, 0.03f)
+    );
+
+    bool clicked = ImGui::Button(
+        label.c_str(),
+        ImVec2(-FLT_MIN, 0)
+    );
+
+    ImGui::PopStyleVar(3);
+    ImGui::PopStyleColor(3);
+
+    return clicked;
 }
 
 bool card(
     const std::string& id,
     const std::string& headline,
     const std::optional<std::string>& subtext,
-    const std::optional<std::string>& rightLabel
+    const std::optional<std::string>& right_label
 ) {
-    ImVec2 padding = ImVec2(20, 12);
-    float rounding = 5.0f;
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, rounding);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(20, 12));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.0f, 0.5f));
 
-    ImGui::PushStyleColor(ImGuiCol_Button, helpers::hexColor(0xFFFFFF, 0.05f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, helpers::hexColor(0xFFFFFF, 0.07f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, helpers::hexColor(0xFFFFFF, 0.05f));
-    ImVec2 start = ImGui::GetCursorScreenPos();
-    ImVec2 cardSize = ImVec2(ImGui::GetContentRegionAvail().x, 60);
+    ImGui::PushStyleColor(
+        ImGuiCol_Button,
+        helpers::hexColor(0xFFFFFF, 0.05f)
+    );
+    ImGui::PushStyleColor(
+        ImGuiCol_ButtonHovered,
+        helpers::hexColor(0xFFFFFF, 0.07f)
+    );
+    ImGui::PushStyleColor(
+        ImGuiCol_ButtonActive,
+        helpers::hexColor(0xFFFFFF, 0.05f)
+    );
 
-    ImGui::InvisibleButton(id.c_str(), cardSize); 
+    ImVec2 start = ImGui::GetCursorScreenPos();
+    ImVec2 card_size = ImVec2(ImGui::GetContentRegionAvail().x, 60);
+
+    ImGui::InvisibleButton(id.c_str(), card_size); 
     bool clicked = ImGui::IsItemClicked();
     bool hovered = ImGui::IsItemHovered();
     bool active = ImGui::IsItemActive();
 
-    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    ImU32 bgColor = ImGui::GetColorU32(ImGuiCol_Button);
+    ImU32 bg_color = ImGui::GetColorU32(ImGuiCol_Button);
+    if (hovered) bg_color = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+    if (active) bg_color = ImGui::GetColorU32(ImGuiCol_ButtonActive);
 
-    if (hovered) bgColor = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
-    if (active) bgColor = ImGui::GetColorU32(ImGuiCol_ButtonActive);
-
-    drawList->AddRectFilled(
+    draw_list->AddRectFilled(
         start,
-        ImVec2(start.x + cardSize.x, start.y + cardSize.y),
-        bgColor,
+        ImVec2(start.x + card_size.x, start.y + card_size.y),
+        bg_color,
         5.0f
     );
 
@@ -82,23 +107,26 @@ bool card(
         ImGui::PopStyleColor();
     }
 
-    if (rightLabel)
+    if (right_label)
     {
-        const char* rightLabelValue = rightLabel.value().c_str();
-        ImVec2 rightTextSize = ImGui::CalcTextSize(rightLabelValue);
-        ImGui::SetCursorScreenPos(ImVec2(start.x + cardSize.x - rightTextSize.x - 16, start.y + 22));
-        ImGui::Text("%s", rightLabelValue);
+        const char* right_label_value = right_label.value().c_str();
+        ImVec2 right_text_size = ImGui::CalcTextSize(right_label_value);
+        ImGui::SetCursorScreenPos(
+            ImVec2(start.x + card_size.x - right_text_size.x - 16, start.y + 22)
+        );
+        ImGui::Text("%s", right_label_value);
     }
 
-    ImGui::SetCursorScreenPos(ImVec2(start.x, start.y + cardSize.y));
+    ImGui::SetCursorScreenPos(ImVec2(start.x, start.y + card_size.y));
     ImGui::PopStyleVar(3);
     ImGui::PopStyleColor(3);
 
     ImGui::Dummy(ImVec2(6, 6));
+
     return clicked;
 }
 
-void dockSpace() {
+void dock_space() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::Begin(
         "MainWindow",
@@ -121,17 +149,26 @@ void dockSpace() {
         ImGuiDockNodeFlags_PassthruCentralNode
     ); 
 
-    static bool isFirstRender = true;
+    static bool is_first_render = true;
 
-    if (isFirstRender)
+    if (is_first_render)
     {
-        isFirstRender = false;
+        is_first_render = false;
         ImGui::DockBuilderRemoveNode(dockspace_id);
         ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_None);
-        ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
+        ImGui::DockBuilderSetNodeSize(
+            dockspace_id,
+            ImGui::GetMainViewport()->Size
+        );
 
         ImGuiID dock_id_left, dock_id_right;
-        ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.20f, &dock_id_left, &dock_id_right);
+        ImGui::DockBuilderSplitNode(
+            dockspace_id,
+            ImGuiDir_Left,
+            0.20f,
+            &dock_id_left,
+            &dock_id_right
+        );
 
         ImGuiDockNode* left_node  = ImGui::DockBuilderGetNode(dock_id_left);
         ImGuiDockNode* right_node = ImGui::DockBuilderGetNode(dock_id_right);
@@ -170,7 +207,7 @@ void sidebar(std::function<void()> children)
     ImGui::End();
 }
 
-void mainContent(std::function<void()> children)
+void main_content(std::function<void()> children)
 {
     ImGui::Begin(
         "MainContent",
@@ -191,8 +228,8 @@ enum Route {
   PAGE_3
 };
 
-void testSuitesPage() {
-    for (TestSuite test_suite : vm::test_suites_vm().test_suites)
+void test_suites_page(vm::test_suites::TestSuitesViewModel& test_suites_vm) {
+    for (TestSuite test_suite : test_suites_vm.test_suites)
     {
         card(
             std::to_string(test_suite.id),
@@ -203,35 +240,35 @@ void testSuitesPage() {
     }
 }
 
-void ui::mainFrame()
+void ui::main_frame(vm::test_suites::TestSuitesViewModel& test_suites_vm)
 {
-    static Route currentRoute = PAGE_TEST_SUITES;
+    static Route current_route = PAGE_TEST_SUITES;
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
     
-    dockSpace();
+    dock_space();
 
     sidebar([]() {
-        if (sidebarButton("Test Suites", currentRoute == PAGE_TEST_SUITES))
+        if (sidebar_button("Test Suites", current_route == PAGE_TEST_SUITES))
         {
-            currentRoute = PAGE_TEST_SUITES;
+            current_route = PAGE_TEST_SUITES;
         }
 
-        if (sidebarButton("Page 2", currentRoute == PAGE_2))
+        if (sidebar_button("Page 2", current_route == PAGE_2))
         {
-            currentRoute = PAGE_2;
+            current_route = PAGE_2;
         }
 
-        if (sidebarButton("Page 3", currentRoute == PAGE_3))
+        if (sidebar_button("Page 3", current_route == PAGE_3))
         {
-            currentRoute = PAGE_3;
+            current_route = PAGE_3;
         }
     });
 
-    mainContent([&]() {
-        switch(currentRoute) {
+    main_content([&]() {
+        switch(current_route) {
             case PAGE_TEST_SUITES:
-                testSuitesPage();
+                test_suites_page(test_suites_vm);
                 break;
             case PAGE_2:
                 ImGui::Text("Page 2");
@@ -243,14 +280,4 @@ void ui::mainFrame()
                 ImGui::Text("404");
         }
     });
-}
-
-void ui::init_view_models() {
-    std::cout << "Initialize View Models" << std::endl;    
-
-    vm::test_suites_vm_init();
-
-    for (TestSuite test_suite : vm::test_suites_vm().test_suites) {
-        std::cout << "Test Suite" << std::endl;
-    }
 }
