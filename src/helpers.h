@@ -4,5 +4,5 @@
 #include "imgui.h"
 
 namespace helpers {
-  ImVec4 hexColor(uint32_t hex, float alpha);
+  ImVec4 hex_color(uint32_t hex, float alpha);
 }

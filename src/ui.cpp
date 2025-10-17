@@ -28,17 +28,17 @@ bool sidebar_button(
 
     ImVec4 button_color =
         is_active
-        ? helpers::hexColor(0xFFFFFF, 0.05f)
-        : helpers::hexColor(0xFFFFFF, 0.00f);
+        ? helpers::hex_color(0xFFFFFF, 0.05f)
+        : helpers::hex_color(0xFFFFFF, 0.00f);
 
     ImGui::PushStyleColor(ImGuiCol_Button, button_color);
     ImGui::PushStyleColor(
         ImGuiCol_ButtonHovered,
-        helpers::hexColor(0xFFFFFF, 0.05f)
+        helpers::hex_color(0xFFFFFF, 0.05f)
     );
     ImGui::PushStyleColor(
         ImGuiCol_ButtonActive,
-        helpers::hexColor(0xFFFFFF, 0.03f)
+        helpers::hex_color(0xFFFFFF, 0.03f)
     );
 
     bool clicked = ImGui::Button(
@@ -64,15 +64,15 @@ bool card(
 
     ImGui::PushStyleColor(
         ImGuiCol_Button,
-        helpers::hexColor(0xFFFFFF, 0.05f)
+        helpers::hex_color(0xFFFFFF, 0.05f)
     );
     ImGui::PushStyleColor(
         ImGuiCol_ButtonHovered,
-        helpers::hexColor(0xFFFFFF, 0.07f)
+        helpers::hex_color(0xFFFFFF, 0.07f)
     );
     ImGui::PushStyleColor(
         ImGuiCol_ButtonActive,
-        helpers::hexColor(0xFFFFFF, 0.05f)
+        helpers::hex_color(0xFFFFFF, 0.05f)
     );
 
     ImVec2 start = ImGui::GetCursorScreenPos();
