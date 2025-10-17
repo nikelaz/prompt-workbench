@@ -76,7 +76,7 @@ void init_imgui(app::AppState& state)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    theme::applyColorScheme();
+    theme::apply_color_scheme();
 
     ImGuiIO& io = ImGui::GetIO(); 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;

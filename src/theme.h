@@ -1,5 +1,5 @@
 #pragma once
 
 namespace theme {
-    void applyColorScheme();
+    void apply_color_scheme();
 }

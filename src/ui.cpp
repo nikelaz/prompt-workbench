@@ -194,11 +194,11 @@ void sidebar(std::function<void()> children)
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoResize
     );
-    
+
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     ImVec2 pos  = ImGui::GetWindowPos();
     ImVec2 size = ImGui::GetWindowSize();
-    
+
     ImU32 bg_color = ImColor(1.0f, 1.0f, 1.0f, 0.05f);
     draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), bg_color);
 
@@ -223,35 +223,43 @@ void main_content(std::function<void()> children)
 }
 
 enum Route {
-  PAGE_TEST_SUITES,
-  PAGE_2,
-  PAGE_3
+    TEST_SUITES,
+    TEST_SUITES_DETAILS,
+    PAGE_2,
+    PAGE_3
 };
 
-void test_suites_page(vm::test_suites::TestSuitesViewModel& test_suites_vm) {
+void test_suites_page(
+    vm::test_suites::TestSuitesViewModel& test_suites_vm,
+    Route& current_route
+)
+{
     for (TestSuite test_suite : test_suites_vm.test_suites)
     {
-        card(
+        if (card(
             std::to_string(test_suite.id),
             test_suite.title,
             test_suite.description,
             test_suite.model
-        );
+        ))
+        {
+            current_route = TEST_SUITES_DETAILS;
+        }
     }
 }
 
 void ui::main_frame(vm::test_suites::TestSuitesViewModel& test_suites_vm)
 {
-    static Route current_route = PAGE_TEST_SUITES;
+    static Route current_route = TEST_SUITES;
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-    
+
     dock_space();
 
     sidebar([]() {
-        if (sidebar_button("Test Suites", current_route == PAGE_TEST_SUITES))
+        if (sidebar_button("Test Suites", current_route == TEST_SUITES))
         {
-            current_route = PAGE_TEST_SUITES;
+            current_route = TEST_SUITES;
         }
 
         if (sidebar_button("Page 2", current_route == PAGE_2))
@@ -267,8 +275,11 @@ void ui::main_frame(vm::test_suites::TestSuitesViewModel& test_suites_vm)
 
     main_content([&]() {
         switch(current_route) {
-            case PAGE_TEST_SUITES:
-                test_suites_page(test_suites_vm);
+            case TEST_SUITES:
+                test_suites_page(test_suites_vm, current_route);
+                break;
+            case TEST_SUITES_DETAILS:
+                ImGui::Text("Test Suite Details");
                 break;
             case PAGE_2:
                 ImGui::Text("Page 2");

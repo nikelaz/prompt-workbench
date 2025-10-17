@@ -2,7 +2,7 @@
 #include "theme.h"
 #include "helpers.h"
 
-void theme::applyColorScheme()
+void theme::apply_color_scheme()
 {
     ImGuiStyle* style = &ImGui::GetStyle();
     ImVec4* colors = style->Colors;
