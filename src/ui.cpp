@@ -4,6 +4,7 @@
 #include "imgui_internal.h"
 #include "helpers.h"
 #include "view-models.h"
+#include "routing.h"
 
 bool ui::button(const std::string& label) 
 {
@@ -222,17 +223,10 @@ void main_content(std::function<void()> children)
     ImGui::End();
 }
 
-enum Route {
-    TEST_SUITES,
-    TEST_SUITES_DETAILS,
-    PAGE_2,
-    PAGE_3
-};
-
 void test_suites_page(
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
     dba::DBAState& dba_state,
-    Route& current_route
+    routing::Router& router
 )
 {
     for (TestSuite test_suite : test_suites_vm.test_suites)
@@ -249,15 +243,25 @@ void test_suites_page(
                 dba_state,
                 test_suite.id
             );
-            current_route = TEST_SUITES_DETAILS;
+            routing::push(router, routing::TEST_SUITES_DETAILS);
         }
     }
 }
 
+void top_bar(routing::Router& router) {
+    if (ui::button("Back"))
+    {
+        routing::back(router);
+    }
+}
+
 void test_suites_details_page(
-    vm::test_suites::TestSuitesViewModel& test_suites_vm
+    vm::test_suites::TestSuitesViewModel& test_suites_vm,
+    routing::Router& router
 )
 {
+    top_bar(router);
+
     if (!test_suites_vm.current_test_suite)
     {
         ImGui::Text("An unexpected error occured. Could not load the test suite");
@@ -286,41 +290,57 @@ void ui::main_frame(
     dba::DBAState& dba_state
 )
 {
-    static Route current_route = TEST_SUITES;
+    static routing::Router router = routing::init(routing::TEST_SUITES); 
+
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
 
     dock_space();
 
     sidebar([]() {
-        if (sidebar_button("Test Suites", current_route == TEST_SUITES))
+        if (
+            sidebar_button(
+                "Test Suites",
+                router.current_route == routing::TEST_SUITES
+            )
+        )
         {
-            current_route = TEST_SUITES;
+            routing::push(router, routing::TEST_SUITES);
         }
 
-        if (sidebar_button("Page 2", current_route == PAGE_2))
+        if (
+            sidebar_button(
+                "Page 2",
+                router.current_route == routing::PAGE_2
+            )
+        )
         {
-            current_route = PAGE_2;
+            routing::push(router, routing::PAGE_2);
         }
 
-        if (sidebar_button("Page 3", current_route == PAGE_3))
+        if (
+            sidebar_button(
+                "Page 3",
+                router.current_route == routing::PAGE_3
+            )
+        )
         {
-            current_route = PAGE_3;
+            routing::push(router, routing::PAGE_3);
         }
     });
 
     main_content([&]() {
-        switch(current_route) {
-            case TEST_SUITES:
-                test_suites_page(test_suites_vm, dba_state, current_route);
+        switch(router.current_route) {
+            case routing::TEST_SUITES:
+                test_suites_page(test_suites_vm, dba_state, router);
                 break;
-            case TEST_SUITES_DETAILS:
-                test_suites_details_page(test_suites_vm); 
+            case routing::TEST_SUITES_DETAILS:
+                test_suites_details_page(test_suites_vm, router); 
                 break;
-            case PAGE_2:
+            case routing::PAGE_2:
                 ImGui::Text("Page 2");
                 break;
-            case PAGE_3:
+            case routing::PAGE_3:
                 ImGui::Text("Page 3");
                 break;
             default:

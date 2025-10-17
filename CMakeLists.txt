@@ -39,6 +39,7 @@ add_executable(app
     src/dba/result-runs.cpp
     src/dba/answers.cpp
     src/view-models.cpp
+    src/routing.cpp
 )
 
 target_include_directories(app PRIVATE src/ src/dba)
