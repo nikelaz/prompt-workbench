@@ -27,6 +27,7 @@ erDiagram
     Answer {
         int64_t id
         string answer
+        int64_t user_prompt_id
         int64_t result_run_id
     }
 
@@ -34,4 +35,5 @@ erDiagram
     TestSuite ||--o{ UserPrompt : "has many"
     TestSuite ||--o{ ResultRun : "has many"
     ResultRun ||--o{ Answer : "has many"
+    UserPrompt ||--o{ Answer : "has many"
 ```
