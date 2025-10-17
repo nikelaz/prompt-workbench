@@ -114,7 +114,7 @@ void app::render_loop(AppState& app_state, dba::DBAState& dba_state)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ui::main_frame(test_suites_vm);
+        ui::main_frame(test_suites_vm, dba_state);
 
         ImGui::Render();
 

@@ -231,6 +231,7 @@ enum Route {
 
 void test_suites_page(
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
+    dba::DBAState& dba_state,
     Route& current_route
 )
 {
@@ -243,12 +244,47 @@ void test_suites_page(
             test_suite.model
         ))
         {
+            vm::test_suites::set_current_test_suite(
+                test_suites_vm,
+                dba_state,
+                test_suite.id
+            );
             current_route = TEST_SUITES_DETAILS;
         }
     }
 }
 
-void ui::main_frame(vm::test_suites::TestSuitesViewModel& test_suites_vm)
+void test_suites_details_page(
+    vm::test_suites::TestSuitesViewModel& test_suites_vm
+)
+{
+    if (!test_suites_vm.current_test_suite)
+    {
+        ImGui::Text("An unexpected error occured. Could not load the test suite");
+    }
+
+    ImGui::Text(
+        "Title: %s",
+        test_suites_vm.current_test_suite->title.c_str()
+    );
+    ImGui::Text(
+        "Description: %s",
+        test_suites_vm.current_test_suite->description.c_str()
+    );
+    ImGui::Text(
+        "System Prompt: %s",
+        test_suites_vm.current_test_suite->system_prompt.c_str()
+    );
+    ImGui::Text(
+        "Model: %s",
+        test_suites_vm.current_test_suite->model.c_str()
+    );
+}
+
+void ui::main_frame(
+    vm::test_suites::TestSuitesViewModel& test_suites_vm,
+    dba::DBAState& dba_state
+)
 {
     static Route current_route = TEST_SUITES;
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -276,10 +312,10 @@ void ui::main_frame(vm::test_suites::TestSuitesViewModel& test_suites_vm)
     main_content([&]() {
         switch(current_route) {
             case TEST_SUITES:
-                test_suites_page(test_suites_vm, current_route);
+                test_suites_page(test_suites_vm, dba_state, current_route);
                 break;
             case TEST_SUITES_DETAILS:
-                ImGui::Text("Test Suite Details");
+                test_suites_details_page(test_suites_vm); 
                 break;
             case PAGE_2:
                 ImGui::Text("Page 2");
