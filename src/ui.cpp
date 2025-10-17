@@ -1,7 +1,10 @@
+#include <functional>
+#include <iostream>
 #include "ui.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "helpers.h"
+#include "view-models.h"
 
 bool ui::button(const char* label) 
 {
@@ -32,10 +35,10 @@ bool sidebarButton(const char* label, const bool isActive = false) {
 }
 
 bool card(
-    const char* id,
-    const char* headline,
-    const char* subtext = nullptr,
-    const char* rightLabel = nullptr
+    const std::string& id,
+    const std::string& headline,
+    const std::optional<std::string>& subtext,
+    const std::optional<std::string>& rightLabel
 ) {
     ImVec2 padding = ImVec2(20, 12);
     float rounding = 5.0f;
@@ -49,7 +52,7 @@ bool card(
     ImVec2 start = ImGui::GetCursorScreenPos();
     ImVec2 cardSize = ImVec2(ImGui::GetContentRegionAvail().x, 60);
 
-    ImGui::InvisibleButton(id, cardSize); 
+    ImGui::InvisibleButton(id.c_str(), cardSize); 
     bool clicked = ImGui::IsItemClicked();
     bool hovered = ImGui::IsItemHovered();
     bool active = ImGui::IsItemActive();
@@ -69,21 +72,22 @@ bool card(
     );
 
     ImGui::SetCursorScreenPos(ImVec2(start.x + 16, start.y + 12));
-    ImGui::Text("%s", headline);
+    ImGui::Text("%s", headline.c_str());
 
     if (subtext)
     {
         ImGui::SetCursorScreenPos(ImVec2(start.x + 16, start.y + 32));
         ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 180, 180, 255));
-        ImGui::Text("%s", subtext);
+        ImGui::Text("%s", subtext.value().c_str());
         ImGui::PopStyleColor();
     }
 
     if (rightLabel)
     {
-        ImVec2 rightTextSize = ImGui::CalcTextSize(rightLabel);
+        const char* rightLabelValue = rightLabel.value().c_str();
+        ImVec2 rightTextSize = ImGui::CalcTextSize(rightLabelValue);
         ImGui::SetCursorScreenPos(ImVec2(start.x + cardSize.x - rightTextSize.x - 16, start.y + 22));
-        ImGui::Text("%s", rightLabel);
+        ImGui::Text("%s", rightLabelValue);
     }
 
     ImGui::SetCursorScreenPos(ImVec2(start.x, start.y + cardSize.y));
@@ -188,9 +192,15 @@ enum Route {
 };
 
 void testSuitesPage() {
-    card("card1", "Test Suite #1", "Another label 1", "Third label 1");
-    card("card2", "Test Suite #2");
-    card("card3", "Text Suite #3", "Another label 3", "Third label 3");
+    for (TestSuite test_suite : vm::test_suites_vm().test_suites)
+    {
+        card(
+            std::to_string(test_suite.id),
+            test_suite.title,
+            test_suite.description,
+            test_suite.model
+        );
+    }
 }
 
 void ui::mainFrame()
@@ -233,4 +243,14 @@ void ui::mainFrame()
                 ImGui::Text("404");
         }
     });
+}
+
+void ui::init_view_models() {
+    std::cout << "Initialize View Models" << std::endl;    
+
+    vm::test_suites_vm_init();
+
+    for (TestSuite test_suite : vm::test_suites_vm().test_suites) {
+        std::cout << "Test Suite" << std::endl;
+    }
 }

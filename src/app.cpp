@@ -78,6 +78,8 @@ void app::initImGui() {
 
     ImGui_ImplGlfw_InitForOpenGL(state.window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
+
+    ui::init_view_models();
 }
 
 void app::renderLoop() {
