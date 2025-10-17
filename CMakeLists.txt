@@ -37,6 +37,7 @@ add_executable(app
     src/dba/test-suites.cpp
     src/dba/user-prompts.cpp
     src/dba/result-runs.cpp
+    src/dba/answers.cpp
 )
 
 target_include_directories(app PRIVATE src/ src/dba)

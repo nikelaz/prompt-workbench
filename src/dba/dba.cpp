@@ -39,11 +39,12 @@ void dba::create_tables() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         answer TEXT NOT NULL,
         result_run_id INTEGER NOT NULL,
+        user_prompt_id INTEGER NOT NULL,
         FOREIGN KEY (result_run_id) REFERENCES result_runs(id) ON DELETE CASCADE
+        FOREIGN KEY (user_prompt_id) REFERENCES user_prompts(id) ON DELETE CASCADE
         );
     )";
 }
-
 
 bool dba::init(const string& db_path)
 {

@@ -33,6 +33,7 @@ struct Answer
 {
     int64_t id;
     std::string answer;
+    int64_t user_prompt_id;
     int64_t result_run_id;
 };
 
@@ -76,7 +77,6 @@ namespace dba
     );
     bool delete_user_prompt(int64_t id);
 
-
     // Result Runs
     std::optional<int64_t> create_result_run(
         const std::string& date, 
@@ -90,4 +90,20 @@ namespace dba
         std::optional<int64_t> test_suite_id
     );
     bool delete_result_run(int64_t id);
+
+    // Answers
+    std::optional<int64_t> create_answer(
+        const std::string& answer, 
+        int64_t user_prompt_id,
+        int64_t result_run_id
+    );
+    std::optional<Answer> get_answer(int64_t id);   
+    std::vector<Answer> get_all_answers(); 
+    bool update_answer(
+        int64_t id,
+        const std::optional<std::string>& answer, 
+        std::optional<int64_t> user_prompt_id,
+        std::optional<int64_t> result_run_id
+    );
+    bool delete_answer(int64_t id);
 }
