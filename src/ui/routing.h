@@ -6,6 +6,7 @@ namespace routing {
     enum Route {
         TEST_SUITES,
         TEST_SUITES_DETAILS,
+        USER_PROMPT_DETAILS,
         PAGE_2,
         PAGE_3
     };

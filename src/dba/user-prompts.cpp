@@ -57,19 +57,20 @@ optional<UserPrompt> dba::get_user_prompt(DBAState& state, int64_t id)
     return result;
 }
 
-vector<UserPrompt> dba::get_all_user_prompts(DBAState& state) 
+vector<UserPrompt> dba::get_all_user_prompts(DBAState& state, int64_t test_suite_id) 
 {
     vector<UserPrompt> user_prompts;
 
     (*state.db) << R"( 
         SELECT
-        id, prompt, test_suite_id
-        FROM user_prompts;
+        id, prompt
+        FROM user_prompts
+        WHERE test_suite_id = ?;
     )"
+        << test_suite_id
         >> [&](
             int64_t id,
-            string prompt,
-            int64_t test_suite_id
+            string prompt
         )
         {
             user_prompts.emplace_back(

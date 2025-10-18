@@ -76,7 +76,7 @@ namespace dba
         int64_t test_suite_id
     );
     std::optional<UserPrompt> get_user_prompt(DBAState& state, int64_t id);   
-    std::vector<UserPrompt> get_all_user_prompts(DBAState& state); 
+    std::vector<UserPrompt> get_all_user_prompts(DBAState& state, int64_t test_suite_id); 
     bool update_user_prompt(
         DBAState& state,
         int64_t id,
@@ -92,7 +92,7 @@ namespace dba
         int64_t test_suite_id
     );
     std::optional<ResultRun> get_result_run(DBAState& state, int64_t id);   
-    std::vector<ResultRun> get_all_result_runs(DBAState& state); 
+    std::vector<ResultRun> get_all_result_runs(DBAState& state, int64_t test_suite_id); 
     bool update_result_run(
         DBAState& state,
         int64_t id,

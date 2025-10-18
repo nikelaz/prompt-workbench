@@ -57,19 +57,20 @@ optional<ResultRun> dba::get_result_run(DBAState& state, int64_t id)
     return result;
 }
 
-vector<ResultRun> dba::get_all_result_runs(DBAState& state) 
+vector<ResultRun> dba::get_all_result_runs(DBAState& state, int64_t test_suite_id) 
 {
     vector<ResultRun> result_runs;
 
     (*state.db) << R"( 
         SELECT
-        id, date, test_suite_id
-        FROM result_runs;
+        id, date
+        FROM result_runs
+        WHERE test_suite_id = ?;
     )"
+        << test_suite_id
         >> [&](
             int64_t id,
-            string date,
-            int64_t test_suite_id
+            string date
         )
         {
             result_runs.emplace_back(

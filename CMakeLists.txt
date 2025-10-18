@@ -29,8 +29,6 @@ find_package(SQLite3 REQUIRED)
 add_executable(app
     src/main.cpp
     src/app.cpp
-    src/theme.cpp
-    src/ui.cpp
     src/helpers.cpp
     src/api.cpp
     src/dba/dba.cpp
@@ -38,11 +36,20 @@ add_executable(app
     src/dba/user-prompts.cpp
     src/dba/result-runs.cpp
     src/dba/answers.cpp
-    src/view-models.cpp
-    src/routing.cpp
+    src/ui/theme.cpp
+    src/ui/view-models.cpp
+    src/ui/routing.cpp
+    src/ui/components/button.cpp
+    src/ui/components/card.cpp
+    src/ui/components/top-bar.cpp
+    src/ui/components/sidebar.cpp
+    src/ui/components/main-frame.cpp
+    src/ui/views/test-suites.cpp
+    src/ui/views/test-suite-details.cpp
+    src/ui/views/user-prompt-details.cpp
 )
 
-target_include_directories(app PRIVATE src/ src/dba)
+target_include_directories(app PRIVATE src/ src/dba src/ui)
 
 target_include_directories(app PRIVATE
     ${CMAKE_SOURCE_DIR}/external/sqlite_modern_cpp
