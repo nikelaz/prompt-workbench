@@ -20,8 +20,8 @@ namespace vm
         );
     }
 
-    namespace user_prompts {
-        struct UserPromptsViewModel
+    namespace user_prompt_details {
+        struct UserPromptDetailsViewModel
         {
             std::vector<UserPrompt> user_prompts;
             std::vector<ResultRun> result_runs;
@@ -29,11 +29,26 @@ namespace vm
             std::optional<UserPrompt> current_user_prompt;
         };
 
-        UserPromptsViewModel init(dba::DBAState& dba_state);
+        UserPromptDetailsViewModel init(dba::DBAState& dba_state);
         void set_test_suite_id(
             dba::DBAState& dba_state,
-            UserPromptsViewModel& user_prompts_vm,
+            UserPromptDetailsViewModel& user_prompts_vm,
             int64_t test_suite_id
+        );
+    }
+
+    namespace result_run_details {
+        struct ResultRunDetailsViewModel
+        {
+            std::vector<Answer> answers;
+            std::optional<ResultRun> current_result_run;
+        };
+
+        ResultRunDetailsViewModel init(dba::DBAState& dba_state);
+        void set_current_result_run(
+            dba::DBAState& dba_state,
+            ResultRunDetailsViewModel& result_run_details_vm,
+            ResultRun current_result_run
         );
     }
 }

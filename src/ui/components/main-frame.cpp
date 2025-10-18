@@ -78,7 +78,8 @@ void dock_space() {
 void ui::components::main_frame(
     dba::DBAState& dba_state,
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
-    vm::user_prompts::UserPromptsViewModel& user_prompts_vm
+    vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
+    vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
 )
 {
     static routing::Router router = routing::init(routing::TEST_SUITES); 
@@ -123,13 +124,27 @@ void ui::components::main_frame(
     main_content([&]() {
         switch(router.current_route) {
             case routing::TEST_SUITES:
-                ui::views::test_suites(router, dba_state, test_suites_vm, user_prompts_vm);
+                ui::views::test_suites(
+                    router,
+                    dba_state,
+                    test_suites_vm,
+                    user_prompt_details_vm
+                );
                 break;
             case routing::TEST_SUITES_DETAILS:
-                ui::views::test_suite_details(router, test_suites_vm, user_prompts_vm); 
+                ui::views::test_suite_details(
+                    router,
+                    dba_state,
+                    test_suites_vm,
+                    user_prompt_details_vm,
+                    result_run_details_vm
+                ); 
                 break;
             case routing::USER_PROMPT_DETAILS:
-                ui::views::user_prompt_details(router, user_prompts_vm); 
+                ui::views::user_prompt_details(router, user_prompt_details_vm); 
+                break;
+            case routing::RESULT_RUN_DETAILS:
+                ui::views::result_run_details(router, result_run_details_vm); 
                 break;
             case routing::PAGE_2:
                 ImGui::Text("Page 2");

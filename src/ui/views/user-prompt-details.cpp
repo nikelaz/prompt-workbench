@@ -3,7 +3,7 @@
 
 void ui::views::user_prompt_details(
     routing::Router& router,
-    vm::user_prompts::UserPromptsViewModel& user_prompts_vm
+    vm::user_prompt_details::UserPromptDetailsViewModel& user_prompts_vm
 )
 {
     ui::components::top_bar(router);

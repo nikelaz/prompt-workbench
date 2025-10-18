@@ -7,6 +7,7 @@ namespace routing {
         TEST_SUITES,
         TEST_SUITES_DETAILS,
         USER_PROMPT_DETAILS,
+        RESULT_RUN_DETAILS,
         PAGE_2,
         PAGE_3
     };

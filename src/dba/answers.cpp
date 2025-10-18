@@ -61,15 +61,17 @@ optional<Answer> dba::get_answer(DBAState& state, int64_t id)
     return result;
 }
 
-vector<Answer> dba::get_all_answers(DBAState& state) 
+vector<Answer> dba::get_all_answers(DBAState& state, int64_t result_run_id) 
 {
     vector<Answer> answers;
 
     (*state.db) << R"( 
         SELECT
         id, answer, user_prompt_id, result_run_id
-        FROM result_runs;
+        FROM answers 
+        WHERE result_run_id = ?;
     )"
+        << result_run_id
         >> [&](
             int64_t id,
             string answer,

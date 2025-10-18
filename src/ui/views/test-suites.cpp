@@ -4,7 +4,7 @@ void ui::views::test_suites(
     routing::Router& router,
     dba::DBAState& dba_state,
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
-    vm::user_prompts::UserPromptsViewModel& user_prompts_vm
+    vm::user_prompt_details::UserPromptDetailsViewModel& user_prompts_vm
 )
 {
     for (TestSuite test_suite : test_suites_vm.test_suites)
@@ -16,7 +16,7 @@ void ui::views::test_suites(
             test_suite.model
         ))
         {
-            vm::user_prompts::set_test_suite_id(
+            vm::user_prompt_details::set_test_suite_id(
                 dba_state,
                 user_prompts_vm,
                 test_suite.id

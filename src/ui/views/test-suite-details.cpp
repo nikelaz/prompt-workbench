@@ -3,8 +3,10 @@
 
 void ui::views::test_suite_details(
     routing::Router& router,
+    dba::DBAState& dba_state,
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
-    vm::user_prompts::UserPromptsViewModel& user_prompts_vm
+    vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
+    vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
 )
 {
     ui::components::top_bar(router);
@@ -33,7 +35,7 @@ void ui::views::test_suite_details(
 
     ImGui::Text("User Prompts");
 
-    for (UserPrompt user_prompt : user_prompts_vm.user_prompts)
+    for (UserPrompt user_prompt : user_prompt_details_vm.user_prompts)
     {
         if (
             ui::components::card(
@@ -44,20 +46,26 @@ void ui::views::test_suite_details(
             )
         )
         {
-            user_prompts_vm.current_user_prompt = user_prompt;
+            user_prompt_details_vm.current_user_prompt = user_prompt;
             routing::push(router, routing::USER_PROMPT_DETAILS);
         }
     }
 
     ImGui::Text("Result Runs");
 
-    for (ResultRun result_run : user_prompts_vm.result_runs)
+    for (ResultRun result_run : user_prompt_details_vm.result_runs)
     {
-      ui::components::card(
-            "result_run_" +  std::to_string(result_run.id),
-            result_run.date,
-            std::nullopt,
-            std::nullopt
-        );
+        if (
+            ui::components::card(
+                "result_run_" +  std::to_string(result_run.id),
+                result_run.date,
+                std::nullopt,
+                std::nullopt
+            )
+        )
+        {
+            vm::result_run_details::set_current_result_run(dba_state, result_run_details_vm, result_run);
+            routing::push(router, routing::RESULT_RUN_DETAILS);
+        }
     }
 }

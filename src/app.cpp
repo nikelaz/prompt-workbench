@@ -101,8 +101,11 @@ void app::render_loop(AppState& app_state, dba::DBAState& dba_state)
     vm::test_suites::TestSuitesViewModel test_suites_vm = 
         vm::test_suites::init(dba_state);
 
-    vm::user_prompts::UserPromptsViewModel user_prompts_vm =
-        vm::user_prompts::init(dba_state);
+    vm::user_prompt_details::UserPromptDetailsViewModel user_prompt_details_vm =
+        vm::user_prompt_details::init(dba_state);
+
+    vm::result_run_details::ResultRunDetailsViewModel result_run_details_vm =
+        vm::result_run_details::init(dba_state);
 
     while (!glfwWindowShouldClose(app_state.window))
     {
@@ -120,7 +123,8 @@ void app::render_loop(AppState& app_state, dba::DBAState& dba_state)
         ui::components::main_frame(
             dba_state,
             test_suites_vm,
-            user_prompts_vm
+            user_prompt_details_vm,
+            result_run_details_vm
         );
 
         ImGui::Render();

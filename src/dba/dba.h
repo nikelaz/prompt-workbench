@@ -109,7 +109,7 @@ namespace dba
         int64_t result_run_id
     );
     std::optional<Answer> get_answer(DBAState& state, int64_t id);   
-    std::vector<Answer> get_all_answers(DBAState& state); 
+    std::vector<Answer> get_all_answers(DBAState& state, int64_t result_run_id); 
     bool update_answer(
         DBAState& state,
         int64_t id,

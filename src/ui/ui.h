@@ -10,17 +10,24 @@ namespace ui {
             routing::Router& router,
             dba::DBAState& dba_state,
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
-            vm::user_prompts::UserPromptsViewModel& user_prompts_vm
+            vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm
         );
         void test_suite_details(
             routing::Router& router,
+            dba::DBAState& dba_state,
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
-            vm::user_prompts::UserPromptsViewModel& user_prompts_vm
+            vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
+            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
         );
 
         void user_prompt_details(
             routing::Router& router,
-            vm::user_prompts::UserPromptsViewModel& user_prompts_vm
+            vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm
+        );
+
+        void result_run_details(
+            routing::Router& router,
+            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
         );
     }
 
@@ -29,7 +36,8 @@ namespace ui {
         void main_frame(
             dba::DBAState& dba_state,
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
-            vm::user_prompts::UserPromptsViewModel& user_prompts_vm
+            vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
+            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
         );
         bool card(
             const std::string& id,
