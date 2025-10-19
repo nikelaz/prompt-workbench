@@ -18,6 +18,10 @@ namespace vm
             dba::DBAState& dba_state,
             int64_t id
         );
+        void refresh(
+            TestSuitesViewModel& test_suites_vm,
+            dba::DBAState& dba_state
+        );      
     }
 
     namespace user_prompt_details {
@@ -49,6 +53,23 @@ namespace vm
             dba::DBAState& dba_state,
             ResultRunDetailsViewModel& result_run_details_vm,
             ResultRun current_result_run
+        );
+    }
+
+    namespace create_test_suite {
+        struct CreateTestSuiteViewModel
+        {       
+            std::string title = "";
+            std::string description = "";
+            std::string system_prompt = "";
+            std::string model = "";
+        };
+
+        CreateTestSuiteViewModel init();
+        void create_test_suite(
+            dba::DBAState& dba_state,
+            CreateTestSuiteViewModel& create_test_suite_vm,
+            test_suites::TestSuitesViewModel& test_suites_vm
         );
     }
 }

@@ -107,6 +107,9 @@ void app::render_loop(AppState& app_state, dba::DBAState& dba_state)
     vm::result_run_details::ResultRunDetailsViewModel result_run_details_vm =
         vm::result_run_details::init(dba_state);
 
+    vm::create_test_suite::CreateTestSuiteViewModel create_test_suite_vm =
+        vm::create_test_suite::init();
+
     while (!glfwWindowShouldClose(app_state.window))
     {
         glfwWaitEvents();
@@ -124,7 +127,8 @@ void app::render_loop(AppState& app_state, dba::DBAState& dba_state)
             dba_state,
             test_suites_vm,
             user_prompt_details_vm,
-            result_run_details_vm
+            result_run_details_vm,
+            create_test_suite_vm
         );
 
         ImGui::Render();

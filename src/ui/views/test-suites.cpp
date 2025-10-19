@@ -7,6 +7,11 @@ void ui::views::test_suites(
     vm::user_prompt_details::UserPromptDetailsViewModel& user_prompts_vm
 )
 {
+    if (ui::components::button("Create Test Suite"))
+    {
+        routing::push(router, routing::CREATE_TEST_SUITE);        
+    }
+
     for (TestSuite test_suite : test_suites_vm.test_suites)
     {
         if (ui::components::card(

@@ -8,9 +8,18 @@ vm::test_suites::TestSuitesViewModel vm::test_suites::init(
 )
 {
     TestSuitesViewModel vm;
-    vector<TestSuite> test_suites = dba::get_all_test_suites(dba_state);
-    vm.test_suites = test_suites;
+    refresh(vm, dba_state);
     return vm;
+}
+
+void vm::test_suites::refresh(
+    TestSuitesViewModel& test_suites_vm,
+    dba::DBAState& dba_state
+)
+{
+    vector<TestSuite> test_suites = 
+        dba::get_all_test_suites(dba_state);
+    test_suites_vm.test_suites = test_suites;
 }
 
 void vm::test_suites::set_current_test_suite(
@@ -63,4 +72,30 @@ void vm::result_run_details::set_current_result_run(
 {
     result_run_details_vm.current_result_run = current_result_run;
     result_run_details_vm.answers = dba::get_all_answers(dba_state, current_result_run.id);
+}
+
+vm::create_test_suite::CreateTestSuiteViewModel vm::create_test_suite::init()
+{
+    CreateTestSuiteViewModel vm;
+    return vm;
+}
+
+void vm::create_test_suite::create_test_suite(
+    dba::DBAState& dba_state,
+    CreateTestSuiteViewModel& create_test_suite_vm,
+    test_suites::TestSuitesViewModel& test_suites_vm
+)
+{
+    optional<int64_t> test_suite_id = dba::create_test_suite(
+        dba_state,
+        create_test_suite_vm.title,
+        create_test_suite_vm.description,
+        create_test_suite_vm.system_prompt,
+        create_test_suite_vm.model
+    );
+
+    vm::test_suites::refresh(
+        test_suites_vm,
+        dba_state
+    );
 }

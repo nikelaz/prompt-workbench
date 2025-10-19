@@ -19,7 +19,12 @@ namespace ui {
             vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
         );
-
+        void create_test_suite(
+            routing::Router& router,
+            dba::DBAState& dba_state,
+            vm::test_suites::TestSuitesViewModel& test_suites_vm,
+            vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm
+        );
         void user_prompt_details(
             routing::Router& router,
             vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm
@@ -37,7 +42,16 @@ namespace ui {
             dba::DBAState& dba_state,
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
             vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
-            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
+            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
+            vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm
+        );
+        bool input(
+            const char* label,
+            std::string* str
+        );
+        bool input_multiline(
+            const char* label,
+            std::string* str
         );
         bool card(
             const std::string& id,

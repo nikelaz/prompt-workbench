@@ -6,6 +6,7 @@ namespace routing {
     enum Route {
         TEST_SUITES,
         TEST_SUITES_DETAILS,
+        CREATE_TEST_SUITE,
         USER_PROMPT_DETAILS,
         RESULT_RUN_DETAILS,
         PAGE_2,
@@ -22,4 +23,3 @@ namespace routing {
     void back(Router& router);
     bool has_prev(Router& router);
 }
-

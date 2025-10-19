@@ -79,7 +79,8 @@ void ui::components::main_frame(
     dba::DBAState& dba_state,
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
     vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
-    vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
+    vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
+    vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm
 )
 {
     static routing::Router router = routing::init(routing::TEST_SUITES); 
@@ -138,6 +139,14 @@ void ui::components::main_frame(
                     test_suites_vm,
                     user_prompt_details_vm,
                     result_run_details_vm
+                ); 
+                break;
+            case routing::CREATE_TEST_SUITE:
+                ui::views::create_test_suite(
+                    router,
+                    dba_state,
+                    test_suites_vm,
+                    create_test_suite_vm
                 ); 
                 break;
             case routing::USER_PROMPT_DETAILS:

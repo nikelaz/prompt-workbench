@@ -44,10 +44,12 @@ add_executable(app
     src/ui/components/top-bar.cpp
     src/ui/components/sidebar.cpp
     src/ui/components/main-frame.cpp
+    src/ui/components/input.cpp
     src/ui/views/test-suites.cpp
     src/ui/views/test-suite-details.cpp
     src/ui/views/user-prompt-details.cpp
     src/ui/views/result-run-details.cpp
+    src/ui/views/create-test-suites.cpp
 )
 
 target_include_directories(app PRIVATE src/ src/dba src/ui)
