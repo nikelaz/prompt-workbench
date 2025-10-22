@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dba.h"
+#include "helpers.h"
 
 namespace vm
 {
@@ -60,9 +61,13 @@ namespace vm
         struct CreateTestSuiteViewModel
         {       
             std::string title = "";
+            helpers::FormError title_error;
             std::string description = "";
+            helpers::FormError description_error;
             std::string system_prompt = "";
+            helpers::FormError system_prompt_error;
             std::string model = "";
+            helpers::FormError model_error; 
         };
 
         CreateTestSuiteViewModel init();
@@ -70,6 +75,9 @@ namespace vm
             dba::DBAState& dba_state,
             CreateTestSuiteViewModel& create_test_suite_vm,
             test_suites::TestSuitesViewModel& test_suites_vm
+        );
+        void validate(
+            CreateTestSuiteViewModel& create_test_suite_vm   
         );
     }
 }

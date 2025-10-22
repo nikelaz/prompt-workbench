@@ -45,6 +45,7 @@ add_executable(app
     src/ui/components/sidebar.cpp
     src/ui/components/main-frame.cpp
     src/ui/components/input.cpp
+    src/ui/components/input-error.cpp
     src/ui/views/test-suites.cpp
     src/ui/views/test-suite-details.cpp
     src/ui/views/user-prompt-details.cpp

@@ -99,3 +99,85 @@ void vm::create_test_suite::create_test_suite(
         dba_state
     );
 }
+
+bool is_not_empty(const std::string& s)
+{
+    return !s.empty();
+}
+
+bool has_max_length(
+    const std::string& s,
+    const int length
+)
+{
+    return s.length() <= length;
+}
+
+void vm::create_test_suite::validate(
+    CreateTestSuiteViewModel& create_test_suite_vm   
+)
+{
+    create_test_suite_vm.title_error.has_error = false;
+    create_test_suite_vm.title_error.message = "";
+    create_test_suite_vm.description_error.has_error = false;
+    create_test_suite_vm.description_error.message = "";
+    create_test_suite_vm.system_prompt_error.has_error = false;
+    create_test_suite_vm.system_prompt_error.message = "";
+    create_test_suite_vm.model_error.has_error = false;
+    create_test_suite_vm.model_error.message = "";
+
+    if (!is_not_empty(create_test_suite_vm.title))
+    {
+        create_test_suite_vm.title_error.has_error = true;
+        create_test_suite_vm.title_error.message =
+            "Title is required";
+    }
+
+    if (!has_max_length(
+        create_test_suite_vm.title,
+        255
+    ))  
+    {
+        create_test_suite_vm.title_error.has_error = true;
+        create_test_suite_vm.title_error.message = 
+            "Title has to be less than 255 characters";
+    }
+
+    if (!is_not_empty(create_test_suite_vm.description))
+    {
+        create_test_suite_vm.description_error.has_error = true;
+        create_test_suite_vm.description_error.message =
+            "Description is required";
+    }
+
+    if (!has_max_length(
+        create_test_suite_vm.description,
+        1000
+    ))  
+    {
+        create_test_suite_vm.description_error.has_error = true;
+        create_test_suite_vm.description_error.message = 
+            "Description has to be less than 1000 characters";
+    }
+
+    if (!is_not_empty(create_test_suite_vm.system_prompt))
+    {
+        create_test_suite_vm.system_prompt_error.has_error = true;
+        create_test_suite_vm.system_prompt_error.message =
+            "System prompt is required";
+    }
+
+    if (!is_not_empty(create_test_suite_vm.model))
+    {
+        create_test_suite_vm.model_error.has_error = true;
+        create_test_suite_vm.model_error.message =
+            "Model is required";
+    }
+
+    if (!has_max_length(create_test_suite_vm.model, 255))
+    {
+        create_test_suite_vm.model_error.has_error = true;
+        create_test_suite_vm.model_error.message =
+            "Model has to be less than 255 characters";
+    }
+}

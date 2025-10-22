@@ -3,6 +3,7 @@
 #include "view-models.h"
 #include "dba.h"
 #include "routing.h"
+#include "helpers.h"
 
 namespace ui {
     namespace views {        
@@ -65,5 +66,6 @@ namespace ui {
             const std::string& label,
             const bool is_active
         );
+        void input_error(const helpers::FormError& error); 
     }
 }

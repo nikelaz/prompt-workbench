@@ -18,14 +18,25 @@ bool ui::components::input(
     std::string* str
 )
 {
-    return ImGui::InputText(
-        label,
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(18, 11));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+
+    std::string id = "##" + std::string(label);
+
+    ImGui::Text("%s", label);
+
+    bool input = ImGui::InputText(
+        id.c_str(),
         (char*)str->c_str(),
         str->capacity() + 1,
         ImGuiInputTextFlags_CallbackResize,
         resize_callback,
         (void*)str
     );
+
+    ImGui::PopStyleVar(2);
+
+    return input;
 }
 
 bool ui::components::input_multiline(
@@ -33,13 +44,23 @@ bool ui::components::input_multiline(
     std::string* str
 )
 {
-    return ImGui::InputTextMultiline(
-        label,
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(18, 11));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
+
+    std::string id = "##" + std::string(label);
+    ImGui::Text("%s", label);
+
+    bool input = ImGui::InputTextMultiline(
+        id.c_str(),
         (char*)str->c_str(),
         str->capacity() + 1,
-        ImVec2(200, 200),
+        ImVec2(0, 0),
         ImGuiInputTextFlags_CallbackResize,
         resize_callback,
         (void*)str
     );
+    
+    ImGui::PopStyleVar(2);
+
+    return input;
 }
