@@ -8,6 +8,7 @@ namespace routing {
         TEST_SUITES_DETAILS,
         CREATE_TEST_SUITE,
         USER_PROMPT_DETAILS,
+        CREATE_USER_PROMPTS,
         RESULT_RUN_DETAILS,
         PAGE_2,
         PAGE_3

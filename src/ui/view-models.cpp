@@ -35,23 +35,46 @@ void vm::test_suites::set_current_test_suite(
     }
 }
 
-vm::user_prompt_details::UserPromptDetailsViewModel vm::user_prompt_details::init(
+vm::user_prompt::UserPromptViewModel vm::user_prompt::init(
     dba::DBAState& dba_state
 )
 {
-    UserPromptDetailsViewModel vm;
+    UserPromptViewModel vm;
     return vm;
 }
 
-void vm::user_prompt_details::set_test_suite_id(
+void vm::user_prompt::set_test_suite_id(
     dba::DBAState& dba_state,
-    UserPromptDetailsViewModel& user_prompts_vm,
+    UserPromptViewModel& user_prompt_vm,
     int64_t test_suite_id
 )
 { 
-    user_prompts_vm.current_test_suite_id = test_suite_id;
-    user_prompts_vm.user_prompts = dba::get_all_user_prompts(dba_state, test_suite_id); 
-    user_prompts_vm.result_runs = dba::get_all_result_runs(dba_state, test_suite_id);
+    user_prompt_vm.current_test_suite_id = test_suite_id;
+    refresh(user_prompt_vm, dba_state);
+}
+
+
+void vm::user_prompt::refresh(
+    UserPromptViewModel& user_prompt_vm,
+    dba::DBAState& dba_state
+)
+{
+    if (!user_prompt_vm.current_test_suite_id)
+    {
+        return;
+    }
+
+    user_prompt_vm.user_prompts = 
+        dba::get_all_user_prompts(
+            dba_state,
+            user_prompt_vm.current_test_suite_id.value()
+        ); 
+
+    user_prompt_vm.result_runs = 
+        dba::get_all_result_runs(
+            dba_state, 
+            user_prompt_vm.current_test_suite_id.value()
+        );
 }
 
 vm::result_run_details::ResultRunDetailsViewModel vm::result_run_details::init(
@@ -179,5 +202,44 @@ void vm::create_test_suite::validate(
         create_test_suite_vm.model_error.has_error = true;
         create_test_suite_vm.model_error.message =
             "Model has to be less than 255 characters";
+    }
+}
+
+vm::create_user_prompt::CreateUserPromptViewModel vm::create_user_prompt::init()
+{
+    CreateUserPromptViewModel vm;
+    return vm;
+}
+
+void vm::create_user_prompt::create_user_prompt(
+    dba::DBAState& dba_state,
+    CreateUserPromptViewModel& create_user_prompt_vm,
+    user_prompt::UserPromptViewModel& user_prompt_vm
+)
+{
+    if (!user_prompt_vm.current_test_suite_id)
+    {
+        return;
+    }
+
+    optional<int64_t> user_prompt_id = dba::create_user_prompt(
+        dba_state,
+        create_user_prompt_vm.prompt,
+        user_prompt_vm.current_test_suite_id.value()
+    );
+}
+
+void vm::create_user_prompt::validate(
+    CreateUserPromptViewModel& create_user_prompt_vm   
+)
+{
+    create_user_prompt_vm.prompt_error.has_error = false;
+    create_user_prompt_vm.prompt_error.message = "";
+
+    if (!is_not_empty(create_user_prompt_vm.prompt))
+    {
+        create_user_prompt_vm.prompt_error.has_error = true;
+        create_user_prompt_vm.prompt_error.message =
+            "Prompt is required";
     }
 }

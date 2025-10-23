@@ -1,9 +1,10 @@
 #include "ui.h"
-#include "imgui.h"
+#include "fonts.h"
 
 void ui::views::create_test_suite(
     routing::Router& router,
     dba::DBAState& dba_state,
+    fonts::Fonts& fonts,
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
     vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm
 )
@@ -15,7 +16,8 @@ void ui::views::create_test_suite(
         &create_test_suite_vm.title
     );
     ui::components::input_error(
-        create_test_suite_vm.title_error
+        create_test_suite_vm.title_error,
+        fonts
     );
 
     ui::components::input_multiline(
@@ -24,7 +26,8 @@ void ui::views::create_test_suite(
     );
 
     ui::components::input_error(
-        create_test_suite_vm.description_error
+        create_test_suite_vm.description_error,
+        fonts
     );
 
     ui::components::input_multiline(
@@ -33,7 +36,8 @@ void ui::views::create_test_suite(
     );
 
     ui::components::input_error(
-        create_test_suite_vm.system_prompt_error
+        create_test_suite_vm.system_prompt_error,
+        fonts
     );
 
     ui::components::input(
@@ -42,7 +46,8 @@ void ui::views::create_test_suite(
     );
 
     ui::components::input_error(
-        create_test_suite_vm.model_error
+        create_test_suite_vm.model_error,
+        fonts
     );
     
     if (ui::components::button("Create Test Suite"))

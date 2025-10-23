@@ -5,7 +5,7 @@ void ui::views::test_suite_details(
     routing::Router& router,
     dba::DBAState& dba_state,
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
-    vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
+    vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
     vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
 )
 {
@@ -34,6 +34,11 @@ void ui::views::test_suite_details(
     );
 
     ImGui::Text("User Prompts");
+
+    if (ui::components::button("Create User Prompt"))
+    {
+        routing::push(router, routing::CREATE_USER_PROMPTS);        
+    }
 
     for (UserPrompt user_prompt : user_prompt_details_vm.user_prompts)
     {

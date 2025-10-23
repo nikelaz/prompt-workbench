@@ -1,5 +1,4 @@
 #include <iostream>
-#include <filesystem>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "imgui.h"
@@ -8,8 +7,7 @@
 #include "ui.h"
 #include "app.h"
 #include "theme.h"
-
-using namespace std::filesystem;
+#include "fonts.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -59,18 +57,6 @@ int init_glad()
     return 0;
 }
 
-void set_fonts(ImGuiIO *io)
-{
-    io->Fonts->Clear(); 
-    path exePath = current_path();
-    path fontPath = exePath / "fonts" / "Inter-Regular.ttf";
-    ImFont* font_regular = io->Fonts->AddFontFromFileTTF(
-        fontPath.string().c_str(),
-        16.0f
-    );
-    io->FontDefault = font_regular;
-}
-
 void init_imgui(app::AppState& state)
 {
     IMGUI_CHECKVERSION();
@@ -81,34 +67,41 @@ void init_imgui(app::AppState& state)
     ImGuiIO& io = ImGui::GetIO(); 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    set_fonts(&io);
 
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(monitor);
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
-    style.FontSizeBase = 16.0f;
     style.FontScaleDpi = main_scale;
 
     ImGui_ImplGlfw_InitForOpenGL(state.window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
 }
 
-void app::render_loop(AppState& app_state, dba::DBAState& dba_state)
+void app::render_loop(
+    AppState& app_state,
+    dba::DBAState& dba_state
+)
 {
     ImGuiIO& io = ImGui::GetIO(); 
+
+    fonts::Fonts fonts = fonts::load(&io);
+
     vm::test_suites::TestSuitesViewModel test_suites_vm = 
         vm::test_suites::init(dba_state);
 
-    vm::user_prompt_details::UserPromptDetailsViewModel user_prompt_details_vm =
-        vm::user_prompt_details::init(dba_state);
+    vm::user_prompt::UserPromptViewModel user_prompt_details_vm =
+        vm::user_prompt::init(dba_state);
 
     vm::result_run_details::ResultRunDetailsViewModel result_run_details_vm =
         vm::result_run_details::init(dba_state);
 
     vm::create_test_suite::CreateTestSuiteViewModel create_test_suite_vm =
         vm::create_test_suite::init();
+
+    vm::create_user_prompt::CreateUserPromptViewModel create_user_prompt_vm =
+        vm::create_user_prompt::init();
 
     while (!glfwWindowShouldClose(app_state.window))
     {
@@ -125,10 +118,12 @@ void app::render_loop(AppState& app_state, dba::DBAState& dba_state)
 
         ui::components::main_frame(
             dba_state,
+            fonts,
             test_suites_vm,
             user_prompt_details_vm,
             result_run_details_vm,
-            create_test_suite_vm
+            create_test_suite_vm,
+            create_user_prompt_vm
         );
 
         ImGui::Render();

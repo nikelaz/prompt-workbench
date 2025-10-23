@@ -31,6 +31,7 @@ add_executable(app
     src/app.cpp
     src/helpers.cpp
     src/api.cpp
+    src/fonts.cpp
     src/dba/dba.cpp
     src/dba/test-suites.cpp
     src/dba/user-prompts.cpp
@@ -51,6 +52,7 @@ add_executable(app
     src/ui/views/user-prompt-details.cpp
     src/ui/views/result-run-details.cpp
     src/ui/views/create-test-suites.cpp
+    src/ui/views/create-user-prompts.cpp
 )
 
 target_include_directories(app PRIVATE src/ src/dba src/ui)

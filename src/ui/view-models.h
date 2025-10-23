@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dba.h"
-#include "helpers.h"
+#include "errors.h"
 
 namespace vm
 {
@@ -25,8 +25,8 @@ namespace vm
         );      
     }
 
-    namespace user_prompt_details {
-        struct UserPromptDetailsViewModel
+    namespace user_prompt {
+        struct UserPromptViewModel
         {
             std::vector<UserPrompt> user_prompts;
             std::vector<ResultRun> result_runs;
@@ -34,12 +34,16 @@ namespace vm
             std::optional<UserPrompt> current_user_prompt;
         };
 
-        UserPromptDetailsViewModel init(dba::DBAState& dba_state);
+        UserPromptViewModel init(dba::DBAState& dba_state);
         void set_test_suite_id(
             dba::DBAState& dba_state,
-            UserPromptDetailsViewModel& user_prompts_vm,
+            UserPromptViewModel& user_prompts_vm,
             int64_t test_suite_id
-        );
+        ); 
+        void refresh(
+            UserPromptViewModel& user_prompt_vm,
+            dba::DBAState& dba_state
+        ); 
     }
 
     namespace result_run_details {
@@ -61,13 +65,13 @@ namespace vm
         struct CreateTestSuiteViewModel
         {       
             std::string title = "";
-            helpers::FormError title_error;
+            errors::DisplayError title_error;
             std::string description = "";
-            helpers::FormError description_error;
+            errors::DisplayError description_error;
             std::string system_prompt = "";
-            helpers::FormError system_prompt_error;
+            errors::DisplayError system_prompt_error;
             std::string model = "";
-            helpers::FormError model_error; 
+            errors::DisplayError model_error; 
         };
 
         CreateTestSuiteViewModel init();
@@ -78,6 +82,24 @@ namespace vm
         );
         void validate(
             CreateTestSuiteViewModel& create_test_suite_vm   
+        );
+    }
+
+    namespace  create_user_prompt {
+        struct CreateUserPromptViewModel
+        {       
+            std::string prompt = "";
+            errors::DisplayError prompt_error;
+        };
+
+        CreateUserPromptViewModel init();
+        void create_user_prompt(
+            dba::DBAState& dba_state,
+            CreateUserPromptViewModel& create_user_prompt_vm,
+            user_prompt::UserPromptViewModel& user_prompt_vm
+        );
+        void validate(
+            CreateUserPromptViewModel& create_user_prompt_vm   
         );
     }
 }

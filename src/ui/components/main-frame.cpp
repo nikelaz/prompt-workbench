@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "fonts.h"
 
 void main_content(std::function<void()> children)
 {
@@ -77,10 +78,12 @@ void dock_space() {
 
 void ui::components::main_frame(
     dba::DBAState& dba_state,
+    fonts::Fonts& fonts,
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
-    vm::user_prompt_details::UserPromptDetailsViewModel& user_prompt_details_vm,
+    vm::user_prompt::UserPromptViewModel& user_prompt_vm,
     vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
-    vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm
+    vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm,
+    vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm
 )
 {
     static routing::Router router = routing::init(routing::TEST_SUITES); 
@@ -129,7 +132,7 @@ void ui::components::main_frame(
                     router,
                     dba_state,
                     test_suites_vm,
-                    user_prompt_details_vm
+                    user_prompt_vm
                 );
                 break;
             case routing::TEST_SUITES_DETAILS:
@@ -137,7 +140,7 @@ void ui::components::main_frame(
                     router,
                     dba_state,
                     test_suites_vm,
-                    user_prompt_details_vm,
+                    user_prompt_vm,
                     result_run_details_vm
                 ); 
                 break;
@@ -145,12 +148,22 @@ void ui::components::main_frame(
                 ui::views::create_test_suite(
                     router,
                     dba_state,
+                    fonts,
                     test_suites_vm,
                     create_test_suite_vm
                 ); 
                 break;
             case routing::USER_PROMPT_DETAILS:
-                ui::views::user_prompt_details(router, user_prompt_details_vm); 
+                ui::views::user_prompt_details(router, user_prompt_vm); 
+                break;
+            case routing::CREATE_USER_PROMPTS:
+                ui::views::create_user_prompts(
+                    router,
+                    dba_state,
+                    fonts,
+                    create_user_prompt_vm,
+                    user_prompt_vm
+                ); 
                 break;
             case routing::RESULT_RUN_DETAILS:
                 ui::views::result_run_details(router, result_run_details_vm); 
