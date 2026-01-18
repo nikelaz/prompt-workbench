@@ -2,6 +2,3 @@
 cd build
 cmake ..
 cmake --build . -j$(nproc)
-cd ../
-(cd ./build/bin && ./app)
-
