@@ -2,6 +2,8 @@
 
 #include "dba.h"
 #include "errors.h"
+#include <atomic>
+#include <thread>
 
 namespace vm
 {
@@ -82,6 +84,48 @@ namespace vm
         );
         void validate(
             CreateTestSuiteViewModel& create_test_suite_vm   
+        );
+    }
+
+    namespace api_credentials {
+        struct ApiCredentialsViewModel
+        {
+            int endpoint_selection = 0;
+            std::string custom_endpoint = "";
+            std::string api_endpoint = "";
+            errors::DisplayError api_endpoint_error;
+            std::string api_key = "";
+            errors::DisplayError api_key_error;
+            bool saved = false;
+        };
+
+        ApiCredentialsViewModel init(dba::DBAState& state);
+        void validate(ApiCredentialsViewModel& vm);
+    }
+
+    namespace run_tests {
+        struct RunResult {
+            int64_t user_prompt_id;
+            std::string answer;
+        };
+
+        struct RunTestsViewModel {
+            std::atomic<bool> is_running{false};
+            std::vector<RunResult> pending_results;
+            std::string run_date;
+        };
+
+        void run(
+            RunTestsViewModel& vm,
+            const TestSuite& suite,
+            const std::vector<UserPrompt>& prompts,
+            const Settings& settings
+        );
+
+        void commit_if_done(
+            RunTestsViewModel& vm,
+            dba::DBAState& dba_state,
+            user_prompt::UserPromptViewModel& user_prompt_vm
         );
     }
 

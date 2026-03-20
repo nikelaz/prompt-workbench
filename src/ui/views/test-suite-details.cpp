@@ -6,9 +6,14 @@ void ui::views::test_suite_details(
     dba::DBAState& dba_state,
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
     vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
-    vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
+    vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
+    vm::run_tests::RunTestsViewModel& run_tests_vm
 )
 {
+    if (test_suites_vm.current_test_suite) {
+        vm::run_tests::commit_if_done(run_tests_vm, dba_state, user_prompt_details_vm);
+    }
+
     ui::components::top_bar(router);
 
     if (!test_suites_vm.current_test_suite)
@@ -71,6 +76,20 @@ void ui::views::test_suite_details(
         {
             vm::result_run_details::set_current_result_run(dba_state, result_run_details_vm, result_run);
             routing::push(router, routing::RESULT_RUN_DETAILS);
+        }
+    }
+
+    if (run_tests_vm.is_running.load()) {
+        ImGui::Text("Running...");
+    } else {
+        if (ui::components::button("Run Tests")) {
+            Settings settings = dba::get_settings(dba_state);
+            vm::run_tests::run(
+                run_tests_vm,
+                *test_suites_vm.current_test_suite,
+                user_prompt_details_vm.user_prompts,
+                settings
+            );
         }
     }
 }

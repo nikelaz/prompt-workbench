@@ -19,7 +19,8 @@ namespace ui {
             dba::DBAState& dba_state,
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
-            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
+            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
+            vm::run_tests::RunTestsViewModel& run_tests_vm
         );
         void create_test_suite(
             routing::Router& router,
@@ -43,6 +44,11 @@ namespace ui {
             routing::Router& router,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
         );
+        void api_credentials(
+            dba::DBAState& dba_state,
+            fonts::Fonts& fonts,
+            vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm
+        );
 
     }
 
@@ -55,7 +61,9 @@ namespace ui {
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
             vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm,
-            vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm 
+            vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm,
+            vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm,
+            vm::run_tests::RunTestsViewModel& run_tests_vm
         );
         bool input(
             const char* label,
@@ -80,6 +88,12 @@ namespace ui {
         void input_error(
             const errors::DisplayError& error,
             const fonts::Fonts& fonts
-        ); 
+        );
+        bool select(
+            const char* id,
+            int* current_item,
+            const char* const* items,
+            int items_count
+        );
     }
 }

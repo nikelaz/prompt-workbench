@@ -1,4 +1,7 @@
 #include "view-models.h"
+#include "api.h"
+#include <GLFW/glfw3.h>
+#include <ctime>
 
 using std::vector;
 using std::optional;
@@ -203,6 +206,138 @@ void vm::create_test_suite::validate(
         create_test_suite_vm.model_error.message =
             "Model has to be less than 255 characters";
     }
+}
+
+vm::api_credentials::ApiCredentialsViewModel vm::api_credentials::init(
+    dba::DBAState& dba_state
+)
+{
+    static const char* preset_urls[] = {
+        "https://api.openai.com/v1/chat/completions",
+        "https://openrouter.ai/api/v1/chat/completions",
+        "https://api.groq.com/openai/v1/chat/completions",
+        "http://localhost:11434/v1/chat/completions",
+    };
+    static const int preset_count = 4;
+
+    ApiCredentialsViewModel vm;
+    Settings settings = dba::get_settings(dba_state);
+    vm.api_endpoint = settings.api_endpoint;
+    vm.api_key = settings.api_key;
+
+    vm.endpoint_selection = preset_count; // default to Custom
+    for (int i = 0; i < preset_count; i++) {
+        if (settings.api_endpoint == preset_urls[i]) {
+            vm.endpoint_selection = i;
+            break;
+        }
+    }
+    if (vm.endpoint_selection == preset_count) {
+        vm.custom_endpoint = settings.api_endpoint;
+    }
+
+    return vm;
+}
+
+void vm::api_credentials::validate(ApiCredentialsViewModel& vm)
+{
+    vm.api_endpoint_error.has_error = false;
+    vm.api_endpoint_error.message = "";
+    vm.api_key_error.has_error = false;
+    vm.api_key_error.message = "";
+
+    if (!is_not_empty(vm.api_endpoint))
+    {
+        vm.api_endpoint_error.has_error = true;
+        vm.api_endpoint_error.message = "API endpoint is required";
+    }
+
+    if (!has_max_length(vm.api_endpoint, 2048))
+    {
+        vm.api_endpoint_error.has_error = true;
+        vm.api_endpoint_error.message = "API endpoint has to be less than 2048 characters";
+    }
+
+    if (!is_not_empty(vm.api_key))
+    {
+        vm.api_key_error.has_error = true;
+        vm.api_key_error.message = "API key is required";
+    }
+
+    if (!has_max_length(vm.api_key, 512))
+    {
+        vm.api_key_error.has_error = true;
+        vm.api_key_error.message = "API key has to be less than 512 characters";
+    }
+}
+
+void vm::run_tests::run(
+    RunTestsViewModel& vm,
+    const TestSuite& suite,
+    const std::vector<UserPrompt>& prompts,
+    const Settings& settings
+)
+{
+    if (vm.is_running.load()) return;
+
+    std::time_t now = std::time(nullptr);
+    std::tm* local = std::localtime(&now);
+    char buf[64];
+    std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", local);
+    vm.run_date = buf;
+
+    vm.pending_results.clear();
+    vm.is_running.store(true);
+
+    std::thread([&vm, suite, prompts, settings]() {
+        std::vector<RunResult> local_results;
+        for (const auto& prompt : prompts) {
+            std::string answer = api::openai_ask(
+                settings.api_endpoint,
+                settings.api_key,
+                suite.model,
+                suite.system_prompt,
+                prompt.prompt
+            );
+            local_results.push_back({ prompt.id, answer });
+        }
+        vm.pending_results = std::move(local_results);
+        vm.is_running.store(false);
+        glfwPostEmptyEvent();
+    }).detach();
+}
+
+void vm::run_tests::commit_if_done(
+    RunTestsViewModel& vm,
+    dba::DBAState& dba_state,
+    vm::user_prompt::UserPromptViewModel& user_prompt_vm
+)
+{
+    if (vm.is_running.load()) return;
+    if (vm.pending_results.empty()) return;
+
+    if (!user_prompt_vm.current_test_suite_id) {
+        vm.pending_results.clear();
+        return;
+    }
+
+    optional<int64_t> run_id = dba::create_result_run(
+        dba_state,
+        vm.run_date,
+        user_prompt_vm.current_test_suite_id.value()
+    );
+
+    if (!run_id) {
+        vm.pending_results.clear();
+        return;
+    }
+
+    for (const auto& r : vm.pending_results) {
+        dba::create_answer(dba_state, r.answer, r.user_prompt_id, *run_id);
+    }
+
+    vm.pending_results.clear();
+    vm::user_prompt::refresh(user_prompt_vm, dba_state);
 }
 
 vm::create_user_prompt::CreateUserPromptViewModel vm::create_user_prompt::init()

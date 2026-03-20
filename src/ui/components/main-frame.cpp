@@ -83,7 +83,9 @@ void ui::components::main_frame(
     vm::user_prompt::UserPromptViewModel& user_prompt_vm,
     vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
     vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm,
-    vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm
+    vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm,
+    vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm,
+    vm::run_tests::RunTestsViewModel& run_tests_vm
 )
 {
     static routing::Router router = routing::init(routing::TEST_SUITES); 
@@ -106,23 +108,14 @@ void ui::components::main_frame(
 
         if (
             sidebar_button(
-                "Page 2",
-                router.current_route == routing::PAGE_2
+                "Settings",
+                router.current_route == routing::API_CREDENTIALS
             )
         )
         {
-            routing::push(router, routing::PAGE_2);
+            routing::push(router, routing::API_CREDENTIALS);
         }
 
-        if (
-            sidebar_button(
-                "Page 3",
-                router.current_route == routing::PAGE_3
-            )
-        )
-        {
-            routing::push(router, routing::PAGE_3);
-        }
     });
 
     main_content([&]() {
@@ -141,8 +134,9 @@ void ui::components::main_frame(
                     dba_state,
                     test_suites_vm,
                     user_prompt_vm,
-                    result_run_details_vm
-                ); 
+                    result_run_details_vm,
+                    run_tests_vm
+                );
                 break;
             case routing::CREATE_TEST_SUITE:
                 ui::views::create_test_suite(
@@ -168,11 +162,15 @@ void ui::components::main_frame(
             case routing::RESULT_RUN_DETAILS:
                 ui::views::result_run_details(router, result_run_details_vm); 
                 break;
+            case routing::API_CREDENTIALS:
+                ui::views::api_credentials(
+                    dba_state,
+                    fonts,
+                    api_credentials_vm
+                );
+                break;
             case routing::PAGE_2:
                 ImGui::Text("Page 2");
-                break;
-            case routing::PAGE_3:
-                ImGui::Text("Page 3");
                 break;
             default:
                 ImGui::Text("404");

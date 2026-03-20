@@ -42,6 +42,18 @@ void dba::create_tables(DBAState& state) {
         FOREIGN KEY (user_prompt_id) REFERENCES user_prompts(id) ON DELETE CASCADE
         );
     )";
+
+    (*state.db) << R"(
+        CREATE TABLE IF NOT EXISTS settings (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        api_endpoint TEXT NOT NULL DEFAULT '',
+        api_key TEXT NOT NULL DEFAULT ''
+        );
+    )";
+
+    (*state.db) << R"(
+        INSERT OR IGNORE INTO settings (id) VALUES (1);
+    )";
 }
 
 bool dba::init(DBAState& state, const string& db_path)

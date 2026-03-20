@@ -37,6 +37,7 @@ add_executable(app
     src/dba/user-prompts.cpp
     src/dba/result-runs.cpp
     src/dba/answers.cpp
+    src/dba/settings.cpp
     src/ui/theme.cpp
     src/ui/view-models.cpp
     src/ui/routing.cpp
@@ -47,12 +48,14 @@ add_executable(app
     src/ui/components/main-frame.cpp
     src/ui/components/input.cpp
     src/ui/components/input-error.cpp
+    src/ui/components/select.cpp
     src/ui/views/test-suites.cpp
     src/ui/views/test-suite-details.cpp
     src/ui/views/user-prompt-details.cpp
     src/ui/views/result-run-details.cpp
     src/ui/views/create-test-suites.cpp
     src/ui/views/create-user-prompts.cpp
+    src/ui/views/api-credentials.cpp
 )
 
 target_include_directories(app PRIVATE src/ src/dba src/ui)

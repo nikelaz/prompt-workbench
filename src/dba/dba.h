@@ -37,6 +37,12 @@ struct Answer
     int64_t result_run_id;
 };
 
+struct Settings
+{
+    std::string api_endpoint;
+    std::string api_key;
+};
+
 namespace dba
 {
     struct DBAState
@@ -118,4 +124,8 @@ namespace dba
         std::optional<int64_t> result_run_id
     );
     bool delete_answer(DBAState& state, int64_t id);
+
+    // Settings
+    Settings get_settings(DBAState& state);
+    void upsert_settings(DBAState& state, const std::string& api_endpoint, const std::string& api_key);
 }

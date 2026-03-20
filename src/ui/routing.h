@@ -10,8 +10,8 @@ namespace routing {
         USER_PROMPT_DETAILS,
         CREATE_USER_PROMPTS,
         RESULT_RUN_DETAILS,
-        PAGE_2,
-        PAGE_3
+        API_CREDENTIALS,
+        PAGE_2
     };
 
     struct Router {

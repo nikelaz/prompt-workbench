@@ -103,6 +103,11 @@ void app::render_loop(
     vm::create_user_prompt::CreateUserPromptViewModel create_user_prompt_vm =
         vm::create_user_prompt::init();
 
+    vm::api_credentials::ApiCredentialsViewModel api_credentials_vm =
+        vm::api_credentials::init(dba_state);
+
+    vm::run_tests::RunTestsViewModel run_tests_vm;
+
     while (!glfwWindowShouldClose(app_state.window))
     {
         glfwWaitEvents();
@@ -123,7 +128,9 @@ void app::render_loop(
             user_prompt_details_vm,
             result_run_details_vm,
             create_test_suite_vm,
-            create_user_prompt_vm
+            create_user_prompt_vm,
+            api_credentials_vm,
+            run_tests_vm
         );
 
         ImGui::Render();
