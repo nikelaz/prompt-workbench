@@ -59,23 +59,33 @@ bool ui::components::select(
     ImGui::PushStyleColor(ImGuiCol_PopupBg,       helpers::hex_color(0x121212, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_HeaderHovered,  helpers::hex_color(0xFFFFFF, 0.07f));
     ImGui::PushStyleColor(ImGuiCol_Header,         helpers::hex_color(0xFFFFFF, 0.05f));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,       ImVec2(18, 4));
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,        ImVec2(18, 8));
-    ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, ImVec2(0.0f, 0.5f));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 4));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 8));
 
     if (ImGui::BeginPopup(popup_id.c_str(), ImGuiWindowFlags_NoMove)) {
+        const float text_indent = 18.0f;
+        const float item_height = ImGui::GetFrameHeight();
+        ImDrawList* dl = ImGui::GetWindowDrawList();
+        const float font_size = ImGui::GetFontSize();
+        const ImU32 text_color = ImGui::GetColorU32(ImGuiCol_Text);
+
         for (int i = 0; i < items_count; i++) {
-            if (ImGui::Selectable(items[i], *current_item == i, 0, ImVec2(0, ImGui::GetFrameHeight()))) {
+            ImVec2 pos = ImGui::GetCursorScreenPos();
+            ImGui::PushID(i);
+            if (ImGui::Selectable("##item", *current_item == i, 0, ImVec2(0, item_height))) {
                 *current_item = i;
                 changed = true;
                 glfwPostEmptyEvent();
             }
+            ImGui::PopID();
+            float text_y = pos.y + (item_height - font_size) * 0.5f;
+            dl->AddText(ImVec2(pos.x + text_indent, text_y), text_color, items[i]);
         }
         ImGui::EndPopup();
     }
 
     ImGui::PopStyleColor(3);
-    ImGui::PopStyleVar(3);
+    ImGui::PopStyleVar(2);
 
     return changed;
 }

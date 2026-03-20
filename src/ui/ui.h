@@ -95,5 +95,6 @@ namespace ui {
             const char* const* items,
             int items_count
         );
+        void content_container(std::function<void()> children);
     }
 }

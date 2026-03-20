@@ -12,7 +12,9 @@ void main_content(std::function<void()> children)
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoResize |
         ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoBringToFrontOnFocus
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoScrollbar |
+        ImGuiWindowFlags_NoScrollWithMouse
     );
     children();
     ImGui::End();
@@ -119,6 +121,7 @@ void ui::components::main_frame(
     });
 
     main_content([&]() {
+        ui::components::content_container([&]() {
         switch(router.current_route) {
             case routing::TEST_SUITES:
                 ui::views::test_suites(
@@ -175,5 +178,6 @@ void ui::components::main_frame(
             default:
                 ImGui::Text("404");
         }
+        });
     });
 }
