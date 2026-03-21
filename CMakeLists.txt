@@ -9,6 +9,8 @@ add_subdirectory(external/glfw)
 add_subdirectory(external/cpr)
 add_subdirectory(external/json)
 
+find_package(Freetype REQUIRED)
+
 add_library(imgui STATIC
     external/imgui/imgui.cpp
     external/imgui/imgui_draw.cpp
@@ -16,9 +18,10 @@ add_library(imgui STATIC
     external/imgui/imgui_tables.cpp
     external/imgui/backends/imgui_impl_glfw.cpp
     external/imgui/backends/imgui_impl_opengl3.cpp
+    external/imgui/misc/freetype/imgui_freetype.cpp
 )
-target_include_directories(imgui PUBLIC external/imgui external/imgui/backends)
-target_link_libraries(imgui PUBLIC glfw)
+target_include_directories(imgui PUBLIC external/imgui external/imgui/backends external/imgui/misc/freetype ${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(imgui PUBLIC glfw ${FREETYPE_LIBRARIES})
 
 add_library(glad STATIC external/glad/src/glad.c)
 target_include_directories(glad PUBLIC external/glad/include)
@@ -90,4 +93,7 @@ add_custom_command(TARGET app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${CMAKE_SOURCE_DIR}/assets/fonts/Inter-Regular.ttf
         $<TARGET_FILE_DIR:app>/fonts/Inter-Regular.ttf
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/assets/fonts/TwemojiMozilla.ttf
+        $<TARGET_FILE_DIR:app>/fonts/TwemojiMozilla.ttf
 )

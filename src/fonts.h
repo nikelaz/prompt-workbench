@@ -10,5 +10,5 @@ namespace fonts {
         ImFont* heading;
     };
 
-    Fonts load(ImGuiIO *io);
+    Fonts load(ImGuiIO *io, float dpi_scale = 1.0f);
 }

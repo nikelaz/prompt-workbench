@@ -9,6 +9,7 @@ namespace app {
         GLFWwindow* window = nullptr;
         int width = 1280;
         int height = 720;
+        float dpi_scale = 1.0f;
         ImVec4 clearColor = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
     };
 

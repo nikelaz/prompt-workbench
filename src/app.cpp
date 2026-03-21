@@ -70,10 +70,10 @@ void init_imgui(app::AppState& state)
 
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(monitor);
+    state.dpi_scale = main_scale;
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale);
-    style.FontScaleDpi = main_scale;
 
     ImGui_ImplGlfw_InitForOpenGL(state.window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
@@ -86,7 +86,7 @@ void app::render_loop(
 {
     ImGuiIO& io = ImGui::GetIO(); 
 
-    fonts::Fonts fonts = fonts::load(&io);
+    fonts::Fonts fonts = fonts::load(&io, app_state.dpi_scale);
 
     vm::test_suites::TestSuitesViewModel test_suites_vm = 
         vm::test_suites::init(dba_state);
