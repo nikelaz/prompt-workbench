@@ -8,6 +8,15 @@ void ui::views::api_credentials(
     vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm
 )
 {
+
+    ui::components::spacer(12.0f);
+
+    ImGui::PushFont(fonts.heading);
+    ImGui::Text("Settings");
+    ImGui::PopFont();
+
+    ui::components::spacer(16.0f);
+
     static const char* endpoint_labels[] = {
         "OpenAI",
         "OpenRouter",
@@ -33,6 +42,7 @@ void ui::views::api_credentials(
     );
 
     if (api_credentials_vm.endpoint_selection == custom_idx) {
+        ui::components::spacer(8.0f);
         ui::components::input("Custom Endpoint URL", &api_credentials_vm.custom_endpoint);
         ImGui::TextDisabled("Full chat completions URL, e.g. https://your-host.com/v1/chat/completions");
     }
@@ -41,6 +51,8 @@ void ui::views::api_credentials(
         api_credentials_vm.api_endpoint_error,
         fonts
     );
+
+    ui::components::spacer(16.0f);
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(18, 11));
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
@@ -74,6 +86,8 @@ void ui::views::api_credentials(
         fonts
     );
 
+    ui::components::spacer(16.0f);
+
     if (ui::components::button("Save"))
     {
         if (api_credentials_vm.endpoint_selection < preset_count) {
@@ -100,6 +114,7 @@ void ui::views::api_credentials(
 
     if (api_credentials_vm.saved)
     {
+        ui::components::spacer(8.0f);
         ImGui::Text("Saved!");
     }
 }

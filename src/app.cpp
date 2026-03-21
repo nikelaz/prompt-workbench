@@ -97,8 +97,7 @@ void app::render_loop(
     vm::result_run_details::ResultRunDetailsViewModel result_run_details_vm =
         vm::result_run_details::init(dba_state);
 
-    vm::create_test_suite::CreateTestSuiteViewModel create_test_suite_vm =
-        vm::create_test_suite::init();
+    vm::create_test_suite::CreateTestSuiteViewModel create_test_suite_vm;
 
     vm::create_user_prompt::CreateUserPromptViewModel create_user_prompt_vm =
         vm::create_user_prompt::init();

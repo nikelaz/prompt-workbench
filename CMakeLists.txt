@@ -44,6 +44,7 @@ add_executable(app
     src/ui/components/button.cpp
     src/ui/components/card.cpp
     src/ui/components/top-bar.cpp
+    src/ui/components/page-header.cpp
     src/ui/components/sidebar.cpp
     src/ui/components/main-frame.cpp
     src/ui/components/input.cpp

@@ -11,12 +11,14 @@ namespace ui {
         void test_suites(
             routing::Router& router,
             dba::DBAState& dba_state,
+            fonts::Fonts& fonts,
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm
         );
         void test_suite_details(
             routing::Router& router,
             dba::DBAState& dba_state,
+            fonts::Fonts& fonts,
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
@@ -31,6 +33,7 @@ namespace ui {
         );
         void user_prompt_details(
             routing::Router& router,
+            fonts::Fonts& fonts,
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm
         );
         void create_user_prompts(
@@ -42,6 +45,7 @@ namespace ui {
         );
         void result_run_details(
             routing::Router& router,
+            fonts::Fonts& fonts,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
         );
         void api_credentials(
@@ -80,6 +84,7 @@ namespace ui {
             const std::optional<std::string>& right_label
         );
         void top_bar(routing::Router& router);
+        void page_header(routing::Router& router, const fonts::Fonts& fonts, const char* title);
         void sidebar(std::function<void()> children);
         bool sidebar_button(
             const std::string& label,
@@ -96,5 +101,6 @@ namespace ui {
             int items_count
         );
         void content_container(std::function<void()> children);
+        void spacer(float height);
     }
 }

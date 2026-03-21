@@ -100,12 +100,6 @@ void vm::result_run_details::set_current_result_run(
     result_run_details_vm.answers = dba::get_all_answers(dba_state, current_result_run.id);
 }
 
-vm::create_test_suite::CreateTestSuiteViewModel vm::create_test_suite::init()
-{
-    CreateTestSuiteViewModel vm;
-    return vm;
-}
-
 void vm::create_test_suite::create_test_suite(
     dba::DBAState& dba_state,
     CreateTestSuiteViewModel& create_test_suite_vm,
@@ -206,6 +200,26 @@ void vm::create_test_suite::validate(
         create_test_suite_vm.model_error.message =
             "Model has to be less than 255 characters";
     }
+}
+
+void vm::create_test_suite::fetch_models(
+    CreateTestSuiteViewModel& vm,
+    const Settings& settings
+)
+{
+    if (vm.models_loading.load()) return;
+    vm.models_loading.store(true);
+
+    std::thread([&vm, settings]() {
+        std::vector<std::string> models = api::get_models(
+            settings.api_endpoint,
+            settings.api_key
+        );
+        vm.available_models = std::move(models);
+        vm.models_loaded = true;
+        vm.models_loading.store(false);
+        glfwPostEmptyEvent();
+    }).detach();
 }
 
 vm::api_credentials::ApiCredentialsViewModel vm::api_credentials::init(

@@ -127,6 +127,7 @@ void ui::components::main_frame(
                 ui::views::test_suites(
                     router,
                     dba_state,
+                    fonts,
                     test_suites_vm,
                     user_prompt_vm
                 );
@@ -135,6 +136,7 @@ void ui::components::main_frame(
                 ui::views::test_suite_details(
                     router,
                     dba_state,
+                    fonts,
                     test_suites_vm,
                     user_prompt_vm,
                     result_run_details_vm,
@@ -151,7 +153,7 @@ void ui::components::main_frame(
                 ); 
                 break;
             case routing::USER_PROMPT_DETAILS:
-                ui::views::user_prompt_details(router, user_prompt_vm); 
+                ui::views::user_prompt_details(router, fonts, user_prompt_vm); 
                 break;
             case routing::CREATE_USER_PROMPTS:
                 ui::views::create_user_prompts(
@@ -163,7 +165,7 @@ void ui::components::main_frame(
                 ); 
                 break;
             case routing::RESULT_RUN_DETAILS:
-                ui::views::result_run_details(router, result_run_details_vm); 
+                ui::views::result_run_details(router, fonts, result_run_details_vm); 
                 break;
             case routing::API_CREDENTIALS:
                 ui::views::api_credentials(

@@ -18,7 +18,7 @@ bool ui::components::input(
     std::string* str
 )
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(18, 11));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(16, 14));
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
 
     std::string id = "##" + std::string(label);
@@ -44,7 +44,7 @@ bool ui::components::input_multiline(
     std::string* str
 )
 {
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(18, 11));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(16, 14));
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
 
     std::string id = "##" + std::string(label);

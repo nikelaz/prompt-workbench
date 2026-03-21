@@ -23,6 +23,11 @@ fonts::Fonts fonts::load(ImGuiIO *io)
         13.0f
     );
 
+    fonts.heading = io->Fonts->AddFontFromFileTTF(
+        font_path_str.c_str(),
+        24.0f
+    );
+
     io->FontDefault = fonts.regular_medium;
 
     return fonts;

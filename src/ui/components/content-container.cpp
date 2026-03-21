@@ -2,6 +2,10 @@
 #include "imgui.h"
 #include <algorithm>
 
+void ui::components::spacer(float height) {
+    ImGui::Dummy(ImVec2(0.0f, height));
+}
+
 void ui::components::content_container(std::function<void()> children) {
     const float max_width  = 720.0f;
     const float padding_xy = 32.0f;

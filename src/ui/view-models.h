@@ -65,7 +65,7 @@ namespace vm
 
     namespace create_test_suite {
         struct CreateTestSuiteViewModel
-        {       
+        {
             std::string title = "";
             errors::DisplayError title_error;
             std::string description = "";
@@ -73,17 +73,24 @@ namespace vm
             std::string system_prompt = "";
             errors::DisplayError system_prompt_error;
             std::string model = "";
-            errors::DisplayError model_error; 
+            errors::DisplayError model_error;
+            std::vector<std::string> available_models;
+            std::atomic<bool> models_loading{false};
+            bool models_loaded = false;
+            int model_selection = 0;
         };
 
-        CreateTestSuiteViewModel init();
         void create_test_suite(
             dba::DBAState& dba_state,
             CreateTestSuiteViewModel& create_test_suite_vm,
             test_suites::TestSuitesViewModel& test_suites_vm
         );
         void validate(
-            CreateTestSuiteViewModel& create_test_suite_vm   
+            CreateTestSuiteViewModel& create_test_suite_vm
+        );
+        void fetch_models(
+            CreateTestSuiteViewModel& vm,
+            const Settings& settings
         );
     }
 

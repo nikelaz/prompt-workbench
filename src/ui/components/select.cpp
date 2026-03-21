@@ -13,7 +13,7 @@ bool ui::components::select(
     bool changed = false;
 
     const float height = 42.0f;
-    const float padding_x = 18.0f;
+    const float padding_x = 16.0f;
     const float width = ImGui::CalcItemWidth();
 
     ImGui::PushStyleColor(ImGuiCol_Button,        helpers::hex_color(0xFFFFFF, 0.05f));
@@ -53,7 +53,18 @@ bool ui::components::select(
     std::string popup_id = std::string(id) + "_popup";
     if (clicked) ImGui::OpenPopup(popup_id.c_str());
 
-    ImGui::SetNextWindowPos(ImVec2(start.x, start.y + height + 2));
+    float space_below = ImGui::GetIO().DisplaySize.y - (start.y + height + 2) - 8.0f;
+    float space_above = start.y - 8.0f;
+    bool open_above = space_above > space_below;
+
+    float max_popup_height = open_above ? space_above : space_below;
+    if (max_popup_height < 80.0f) max_popup_height = 80.0f;
+
+    if (open_above)
+        ImGui::SetNextWindowPos(ImVec2(start.x, start.y - 2), ImGuiCond_Always, ImVec2(0, 1));
+    else
+        ImGui::SetNextWindowPos(ImVec2(start.x, start.y + height + 2));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(width, 0), ImVec2(width, max_popup_height));
     ImGui::SetNextWindowSize(ImVec2(width, 0));
 
     ImGui::PushStyleColor(ImGuiCol_PopupBg,       helpers::hex_color(0x121212, 1.0f));
@@ -63,7 +74,7 @@ bool ui::components::select(
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,  ImVec2(0, 8));
 
     if (ImGui::BeginPopup(popup_id.c_str(), ImGuiWindowFlags_NoMove)) {
-        const float text_indent = 18.0f;
+        const float text_indent = 16.0f;
         const float item_height = ImGui::GetFrameHeight();
         ImDrawList* dl = ImGui::GetWindowDrawList();
         const float font_size = ImGui::GetFontSize();
