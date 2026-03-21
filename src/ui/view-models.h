@@ -94,6 +94,34 @@ namespace vm
         );
     }
 
+    namespace edit_test_suite {
+        struct EditTestSuiteViewModel
+        {
+            int64_t id = 0;
+            std::string title = "";
+            errors::DisplayError title_error;
+            std::string description = "";
+            errors::DisplayError description_error;
+            std::string system_prompt = "";
+            errors::DisplayError system_prompt_error;
+            std::string model = "";
+            errors::DisplayError model_error;
+            std::vector<std::string> available_models;
+            std::atomic<bool> models_loading{false};
+            bool models_loaded = false;
+            int model_selection = 0;
+        };
+
+        void prepare(EditTestSuiteViewModel& vm, const TestSuite& suite);
+        void update_test_suite(
+            dba::DBAState& dba_state,
+            EditTestSuiteViewModel& vm,
+            test_suites::TestSuitesViewModel& test_suites_vm
+        );
+        void validate(EditTestSuiteViewModel& vm);
+        void fetch_models(EditTestSuiteViewModel& vm, const Settings& settings);
+    }
+
     namespace api_credentials {
         struct ApiCredentialsViewModel
         {

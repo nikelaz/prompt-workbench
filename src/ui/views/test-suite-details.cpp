@@ -9,7 +9,8 @@ void ui::views::test_suite_details(
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
     vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
     vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
-    vm::run_tests::RunTestsViewModel& run_tests_vm
+    vm::run_tests::RunTestsViewModel& run_tests_vm,
+    vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm
 )
 {
     if (test_suites_vm.current_test_suite) {
@@ -17,6 +18,20 @@ void ui::views::test_suite_details(
     }
 
     ui::components::page_header(router, fonts, "Test Suite");
+
+    if (ui::components::button("Edit")) {
+        vm::edit_test_suite::prepare(edit_test_suite_vm, *test_suites_vm.current_test_suite);
+        routing::push(router, routing::EDIT_TEST_SUITE);
+    }
+
+    ImGui::SameLine();
+
+    if (ui::components::button("Delete")) {
+        dba::delete_test_suite(dba_state, test_suites_vm.current_test_suite->id);
+        test_suites_vm.current_test_suite = std::nullopt;
+        vm::test_suites::refresh(test_suites_vm, dba_state);
+        routing::push(router, routing::TEST_SUITES);
+    }
 
     if (!test_suites_vm.current_test_suite)
     {

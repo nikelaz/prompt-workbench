@@ -22,7 +22,15 @@ namespace ui {
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
-            vm::run_tests::RunTestsViewModel& run_tests_vm
+            vm::run_tests::RunTestsViewModel& run_tests_vm,
+            vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm
+        );
+        void edit_test_suite(
+            routing::Router& router,
+            dba::DBAState& dba_state,
+            fonts::Fonts& fonts,
+            vm::test_suites::TestSuitesViewModel& test_suites_vm,
+            vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm
         );
         void create_test_suite(
             routing::Router& router,
@@ -67,7 +75,8 @@ namespace ui {
             vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm,
             vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm,
             vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm,
-            vm::run_tests::RunTestsViewModel& run_tests_vm
+            vm::run_tests::RunTestsViewModel& run_tests_vm,
+            vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm
         );
         bool input(
             const char* label,

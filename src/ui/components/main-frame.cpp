@@ -87,7 +87,8 @@ void ui::components::main_frame(
     vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm,
     vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm,
     vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm,
-    vm::run_tests::RunTestsViewModel& run_tests_vm
+    vm::run_tests::RunTestsViewModel& run_tests_vm,
+    vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm
 )
 {
     static routing::Router router = routing::init(routing::TEST_SUITES); 
@@ -140,7 +141,17 @@ void ui::components::main_frame(
                     test_suites_vm,
                     user_prompt_vm,
                     result_run_details_vm,
-                    run_tests_vm
+                    run_tests_vm,
+                    edit_test_suite_vm
+                );
+                break;
+            case routing::EDIT_TEST_SUITE:
+                ui::views::edit_test_suite(
+                    router,
+                    dba_state,
+                    fonts,
+                    test_suites_vm,
+                    edit_test_suite_vm
                 );
                 break;
             case routing::CREATE_TEST_SUITE:

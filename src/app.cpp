@@ -107,6 +107,8 @@ void app::render_loop(
 
     vm::run_tests::RunTestsViewModel run_tests_vm;
 
+    vm::edit_test_suite::EditTestSuiteViewModel edit_test_suite_vm;
+
     while (!glfwWindowShouldClose(app_state.window))
     {
         glfwWaitEvents();
@@ -129,7 +131,8 @@ void app::render_loop(
             create_test_suite_vm,
             create_user_prompt_vm,
             api_credentials_vm,
-            run_tests_vm
+            run_tests_vm,
+            edit_test_suite_vm
         );
 
         ImGui::Render();

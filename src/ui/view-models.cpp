@@ -222,6 +222,120 @@ void vm::create_test_suite::fetch_models(
     }).detach();
 }
 
+void vm::edit_test_suite::prepare(
+    EditTestSuiteViewModel& vm,
+    const TestSuite& suite
+)
+{
+    vm.id = suite.id;
+    vm.title = suite.title;
+    vm.description = suite.description;
+    vm.system_prompt = suite.system_prompt;
+    vm.model = suite.model;
+    vm.models_loaded = false;
+    vm.models_loading.store(false);
+    vm.available_models.clear();
+    vm.model_selection = 0;
+}
+
+void vm::edit_test_suite::update_test_suite(
+    dba::DBAState& dba_state,
+    EditTestSuiteViewModel& vm,
+    test_suites::TestSuitesViewModel& test_suites_vm
+)
+{
+    dba::update_test_suite(
+        dba_state,
+        vm.id,
+        vm.title,
+        vm.description,
+        vm.system_prompt,
+        vm.model
+    );
+
+    vm::test_suites::refresh(test_suites_vm, dba_state);
+}
+
+void vm::edit_test_suite::validate(EditTestSuiteViewModel& vm)
+{
+    vm.title_error.has_error = false;
+    vm.title_error.message = "";
+    vm.description_error.has_error = false;
+    vm.description_error.message = "";
+    vm.system_prompt_error.has_error = false;
+    vm.system_prompt_error.message = "";
+    vm.model_error.has_error = false;
+    vm.model_error.message = "";
+
+    if (!is_not_empty(vm.title))
+    {
+        vm.title_error.has_error = true;
+        vm.title_error.message = "Title is required";
+    }
+
+    if (!has_max_length(vm.title, 255))
+    {
+        vm.title_error.has_error = true;
+        vm.title_error.message = "Title has to be less than 255 characters";
+    }
+
+    if (!is_not_empty(vm.description))
+    {
+        vm.description_error.has_error = true;
+        vm.description_error.message = "Description is required";
+    }
+
+    if (!has_max_length(vm.description, 1000))
+    {
+        vm.description_error.has_error = true;
+        vm.description_error.message = "Description has to be less than 1000 characters";
+    }
+
+    if (!is_not_empty(vm.system_prompt))
+    {
+        vm.system_prompt_error.has_error = true;
+        vm.system_prompt_error.message = "System prompt is required";
+    }
+
+    if (!is_not_empty(vm.model))
+    {
+        vm.model_error.has_error = true;
+        vm.model_error.message = "Model is required";
+    }
+
+    if (!has_max_length(vm.model, 255))
+    {
+        vm.model_error.has_error = true;
+        vm.model_error.message = "Model has to be less than 255 characters";
+    }
+}
+
+void vm::edit_test_suite::fetch_models(
+    EditTestSuiteViewModel& vm,
+    const Settings& settings
+)
+{
+    if (vm.models_loading.load()) return;
+    vm.models_loading.store(true);
+
+    std::string current_model = vm.model;
+    std::thread([&vm, settings, current_model]() {
+        std::vector<std::string> models = api::get_models(
+            settings.api_endpoint,
+            settings.api_key
+        );
+        int selection = 0;
+        for (int i = 0; i < (int)models.size(); i++) {
+            if (models[i] == current_model) { selection = i; break; }
+        }
+        vm.available_models = std::move(models);
+        vm.model_selection = selection;
+        vm.models_loaded = true;
+        vm.models_loading.store(false);
+        glfwPostEmptyEvent();
+    }).detach();
+}
+
 vm::api_credentials::ApiCredentialsViewModel vm::api_credentials::init(
     dba::DBAState& dba_state
 )

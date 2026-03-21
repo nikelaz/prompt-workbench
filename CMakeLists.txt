@@ -56,6 +56,7 @@ add_executable(app
     src/ui/views/user-prompt-details.cpp
     src/ui/views/result-run-details.cpp
     src/ui/views/create-test-suites.cpp
+    src/ui/views/edit-test-suite.cpp
     src/ui/views/create-user-prompts.cpp
     src/ui/views/api-credentials.cpp
 )
