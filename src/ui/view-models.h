@@ -53,6 +53,7 @@ namespace vm
         {
             std::vector<Answer> answers;
             std::optional<ResultRun> current_result_run;
+            std::optional<Answer> current_answer;
         };
 
         ResultRunDetailsViewModel init(dba::DBAState& dba_state);
@@ -142,12 +143,17 @@ namespace vm
         struct RunResult {
             int64_t user_prompt_id;
             std::string answer;
+            std::vector<float> embedding;
         };
 
         struct RunTestsViewModel {
             std::atomic<bool> is_running{false};
+            std::atomic<bool> abort_requested{false};
+            std::atomic<int> completed_count{0};
+            int total_count = 0;
             std::vector<RunResult> pending_results;
             std::string run_date;
+            std::string system_prompt;
         };
 
         void run(
@@ -162,6 +168,27 @@ namespace vm
             dba::DBAState& dba_state,
             user_prompt::UserPromptViewModel& user_prompt_vm
         );
+    }
+
+    namespace compare_result_runs {
+        struct CompareResultRunsViewModel {
+            ResultRun run_a;
+            ResultRun run_b;
+            std::vector<Answer> answers_a;
+            std::vector<Answer> answers_b;
+            std::vector<UserPrompt> user_prompts;
+            std::vector<float> diff_scores;
+        };
+
+        CompareResultRunsViewModel init();
+        void prepare(
+            dba::DBAState& dba_state,
+            CompareResultRunsViewModel& vm,
+            const ResultRun& run_a,
+            const ResultRun& run_b,
+            const std::vector<UserPrompt>& user_prompts
+        );
+        void compute_similarities(CompareResultRunsViewModel& vm);
     }
 
     namespace  create_user_prompt {

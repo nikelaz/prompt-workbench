@@ -1,7 +1,10 @@
 #include "view-models.h"
 #include "api.h"
+#include "helpers.h"
+#include "embedding.h"
 #include <GLFW/glfw3.h>
 #include <ctime>
+#include <numeric>
 
 using std::vector;
 using std::optional;
@@ -413,13 +416,18 @@ void vm::run_tests::run(
     char buf[64];
     std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", local);
     vm.run_date = buf;
+    vm.system_prompt = suite.system_prompt;
 
     vm.pending_results.clear();
+    vm.abort_requested.store(false);
+    vm.completed_count.store(0);
+    vm.total_count = static_cast<int>(prompts.size());
     vm.is_running.store(true);
 
     std::thread([&vm, suite, prompts, settings]() {
         std::vector<RunResult> local_results;
         for (const auto& prompt : prompts) {
+            if (vm.abort_requested.load()) break;
             std::string answer = api::openai_ask(
                 settings.api_endpoint,
                 settings.api_key,
@@ -427,9 +435,13 @@ void vm::run_tests::run(
                 suite.system_prompt,
                 prompt.prompt
             );
-            local_results.push_back({ prompt.id, answer });
+            std::vector<float> emb = embedding::compute(answer);
+            local_results.push_back({ prompt.id, answer, std::move(emb) });
+            vm.completed_count.fetch_add(1);
+            glfwPostEmptyEvent();
         }
-        vm.pending_results = std::move(local_results);
+        if (!vm.abort_requested.load())
+            vm.pending_results = std::move(local_results);
         vm.is_running.store(false);
         glfwPostEmptyEvent();
     }).detach();
@@ -452,7 +464,8 @@ void vm::run_tests::commit_if_done(
     optional<int64_t> run_id = dba::create_result_run(
         dba_state,
         vm.run_date,
-        user_prompt_vm.current_test_suite_id.value()
+        user_prompt_vm.current_test_suite_id.value(),
+        vm.system_prompt
     );
 
     if (!run_id) {
@@ -461,11 +474,85 @@ void vm::run_tests::commit_if_done(
     }
 
     for (const auto& r : vm.pending_results) {
-        dba::create_answer(dba_state, r.answer, r.user_prompt_id, *run_id);
+        auto answer_id = dba::create_answer(dba_state, r.answer, r.user_prompt_id, *run_id);
+        if (answer_id && !r.embedding.empty())
+            dba::store_embedding(dba_state, *answer_id, r.embedding);
     }
 
     vm.pending_results.clear();
     vm::user_prompt::refresh(user_prompt_vm, dba_state);
+}
+
+vm::compare_result_runs::CompareResultRunsViewModel vm::compare_result_runs::init()
+{
+    return CompareResultRunsViewModel{};
+}
+
+void vm::compare_result_runs::prepare(
+    dba::DBAState& dba_state,
+    CompareResultRunsViewModel& vm,
+    const ResultRun& run_a,
+    const ResultRun& run_b,
+    const std::vector<UserPrompt>& user_prompts
+)
+{
+    vm.run_a = run_a;
+    vm.run_b = run_b;
+    vm.user_prompts = user_prompts;
+    vm.answers_a = dba::get_all_answers(dba_state, run_a.id);
+    vm.answers_b = dba::get_all_answers(dba_state, run_b.id);
+    vm.diff_scores.clear();
+    compute_similarities(vm);
+}
+
+void vm::compare_result_runs::compute_similarities(CompareResultRunsViewModel& vm)
+{
+    const size_t n = vm.user_prompts.size();
+    std::vector<float> local_scores(n, -1.0f);
+
+    for (size_t i = 0; i < n; i++) {
+        int64_t up_id = vm.user_prompts[i].id;
+
+        const std::vector<float>* emb_a = nullptr;
+        const std::vector<float>* emb_b = nullptr;
+        for (const Answer& a : vm.answers_a)
+            if (a.user_prompt_id == up_id) { emb_a = &a.embedding; break; }
+        for (const Answer& a : vm.answers_b)
+            if (a.user_prompt_id == up_id) { emb_b = &a.embedding; break; }
+
+        if (emb_a && emb_b && !emb_a->empty() && !emb_b->empty()) {
+            float sim = helpers::cosine_similarity(*emb_a, *emb_b);
+            local_scores[i] = (1.0f - sim) * 100.0f;
+        }
+    }
+
+    // Sort: valid scores descending, invalid (-1) at end
+    std::vector<size_t> idx(n);
+    std::iota(idx.begin(), idx.end(), 0);
+    std::sort(idx.begin(), idx.end(), [&](size_t a, size_t b) {
+        if (local_scores[a] < 0.0f && local_scores[b] < 0.0f) return false;
+        if (local_scores[a] < 0.0f) return false;
+        if (local_scores[b] < 0.0f) return true;
+        return local_scores[a] > local_scores[b];
+    });
+
+    std::vector<UserPrompt> sorted_prompts(n);
+    std::vector<Answer>     sorted_a(n), sorted_b(n);
+    std::vector<float>      sorted_scores(n);
+    for (size_t i = 0; i < n; i++) {
+        sorted_prompts[i] = vm.user_prompts[idx[i]];
+        sorted_scores[i]  = local_scores[idx[i]];
+
+        for (const Answer& a : vm.answers_a)
+            if (a.user_prompt_id == vm.user_prompts[idx[i]].id) { sorted_a[i] = a; break; }
+        for (const Answer& a : vm.answers_b)
+            if (a.user_prompt_id == vm.user_prompts[idx[i]].id) { sorted_b[i] = a; break; }
+    }
+
+    vm.user_prompts = std::move(sorted_prompts);
+    vm.answers_a    = std::move(sorted_a);
+    vm.answers_b    = std::move(sorted_b);
+    vm.diff_scores  = std::move(sorted_scores);
 }
 
 vm::create_user_prompt::CreateUserPromptViewModel vm::create_user_prompt::init()

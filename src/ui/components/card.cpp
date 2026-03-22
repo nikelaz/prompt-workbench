@@ -25,10 +25,11 @@ bool ui::components::card(
         helpers::hex_color(0xFFFFFF, 0.05f)
     );
 
+    ImVec2 cursor_pos = ImGui::GetCursorPos();
     ImVec2 start = ImGui::GetCursorScreenPos();
     ImVec2 card_size = ImVec2(ImGui::GetContentRegionAvail().x, 60);
 
-    ImGui::InvisibleButton(id.c_str(), card_size); 
+    ImGui::InvisibleButton(id.c_str(), card_size);
     bool clicked = ImGui::IsItemClicked();
     bool hovered = ImGui::IsItemHovered();
     bool active = ImGui::IsItemActive();
@@ -46,8 +47,10 @@ bool ui::components::card(
         5.0f
     );
 
+    ImGui::PushTextWrapPos(cursor_pos.x + card_size.x - 16.0f);
     ImGui::SetCursorScreenPos(ImVec2(start.x + 16, start.y + 12));
     ImGui::Text("%s", headline.c_str());
+    ImGui::PopTextWrapPos();
 
     if (subtext)
     {

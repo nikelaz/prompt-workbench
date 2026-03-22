@@ -8,6 +8,7 @@
 #include "app.h"
 #include "theme.h"
 #include "fonts.h"
+#include "embedding.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -86,6 +87,8 @@ void app::render_loop(
 {
     ImGuiIO& io = ImGui::GetIO(); 
 
+    embedding::init("models/embed.gguf");
+
     fonts::Fonts fonts = fonts::load(&io, app_state.dpi_scale);
 
     vm::test_suites::TestSuitesViewModel test_suites_vm = 
@@ -108,6 +111,9 @@ void app::render_loop(
     vm::run_tests::RunTestsViewModel run_tests_vm;
 
     vm::edit_test_suite::EditTestSuiteViewModel edit_test_suite_vm;
+
+    vm::compare_result_runs::CompareResultRunsViewModel compare_vm =
+        vm::compare_result_runs::init();
 
     while (!glfwWindowShouldClose(app_state.window))
     {
@@ -132,7 +138,8 @@ void app::render_loop(
             create_user_prompt_vm,
             api_credentials_vm,
             run_tests_vm,
-            edit_test_suite_vm
+            edit_test_suite_vm,
+            compare_vm
         );
 
         ImGui::Render();
@@ -177,8 +184,9 @@ int app::init(AppState& state)
 
 void app::deinit()
 {
+    embedding::deinit();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();    
+    ImGui::DestroyContext();
     glfwTerminate();
 }

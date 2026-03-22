@@ -1,13 +1,23 @@
 #include "imgui.h"
 #include "theme.h"
 #include "helpers.h"
+#include "accent_color.h"
+#include <algorithm>
 
 void theme::apply_color_scheme()
 {
     ImGuiStyle* style = &ImGui::GetStyle();
     ImVec4* colors = style->Colors;
 
-    colors[ImGuiCol_Text]                   = helpers::hex_color(0xFFFFFF, 0.98f); 
+    ImVec4 accent = platform::get_accent_color();
+    ImVec4 accent_hover = ImVec4(
+        std::min(1.0f, accent.x * 1.15f),
+        std::min(1.0f, accent.y * 1.15f),
+        std::min(1.0f, accent.z * 1.15f),
+        1.0f
+    );
+
+    colors[ImGuiCol_Text]                   = helpers::hex_color(0xFFFFFF, 0.98f);
     colors[ImGuiCol_TextDisabled]           = helpers::hex_color(0xFFFFFF, 0.60f);
     colors[ImGuiCol_WindowBg]               = helpers::hex_color(0x121212, 1.00f); 
     colors[ImGuiCol_ChildBg]                = helpers::hex_color(0xFFFFFF, 0.05f);
@@ -28,9 +38,9 @@ void theme::apply_color_scheme()
     colors[ImGuiCol_CheckMark]              = helpers::hex_color(0xFFFFFF, 0.05f); 
     colors[ImGuiCol_SliderGrab]             = helpers::hex_color(0xFFFFFF, 0.05f); 
     colors[ImGuiCol_SliderGrabActive]       = helpers::hex_color(0xFFFFFF, 0.07f); 
-    colors[ImGuiCol_Button]                 = helpers::hex_color(0x303F9F, 1.00f); 
-    colors[ImGuiCol_ButtonHovered]          = helpers::hex_color(0x3F51B5, 1.00f); 
-    colors[ImGuiCol_ButtonActive]           = helpers::hex_color(0x303F9F, 1.00f);
+    colors[ImGuiCol_Button]                 = accent;
+    colors[ImGuiCol_ButtonHovered]          = accent_hover;
+    colors[ImGuiCol_ButtonActive]           = accent;
     colors[ImGuiCol_Header]                 = helpers::hex_color(0xFFFFFF, 0.05f); 
     colors[ImGuiCol_HeaderHovered]          = helpers::hex_color(0xFFFFFF, 0.07f); 
     colors[ImGuiCol_HeaderActive]           = helpers::hex_color(0xFFFFFF, 0.05f); 
@@ -66,5 +76,5 @@ void theme::apply_color_scheme()
     colors[ImGuiCol_NavCursor]              = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
     colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
-    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+    colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.00f, 0.00f, 0.00f, 0.60f);
 }

@@ -54,6 +54,18 @@ void dba::create_tables(DBAState& state) {
     (*state.db) << R"(
         INSERT OR IGNORE INTO settings (id) VALUES (1);
     )";
+
+    (*state.db) << R"(
+        CREATE TABLE IF NOT EXISTS answer_embeddings (
+        answer_id INTEGER PRIMARY KEY,
+        embedding BLOB NOT NULL,
+        FOREIGN KEY (answer_id) REFERENCES answers(id) ON DELETE CASCADE
+        );
+    )";
+
+    try {
+        (*state.db) << "ALTER TABLE result_runs ADD COLUMN system_prompt TEXT NOT NULL DEFAULT ''";
+    } catch (...) {}
 }
 
 bool dba::init(DBAState& state, const string& db_path)

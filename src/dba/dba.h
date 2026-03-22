@@ -27,6 +27,7 @@ struct ResultRun
     int64_t id;
     std::string date;
     int64_t test_suite_id;
+    std::string system_prompt;
 };
 
 struct Answer
@@ -35,6 +36,7 @@ struct Answer
     std::string answer;
     int64_t user_prompt_id;
     int64_t result_run_id;
+    std::vector<float> embedding;
 };
 
 struct Settings
@@ -94,8 +96,9 @@ namespace dba
     // Result Runs
     std::optional<int64_t> create_result_run(
         DBAState& state,
-        const std::string& date, 
-        int64_t test_suite_id
+        const std::string& date,
+        int64_t test_suite_id,
+        const std::string& system_prompt
     );
     std::optional<ResultRun> get_result_run(DBAState& state, int64_t id);   
     std::vector<ResultRun> get_all_result_runs(DBAState& state, int64_t test_suite_id); 
@@ -124,6 +127,7 @@ namespace dba
         std::optional<int64_t> result_run_id
     );
     bool delete_answer(DBAState& state, int64_t id);
+    void store_embedding(DBAState& state, int64_t answer_id, const std::vector<float>& embedding);
 
     // Settings
     Settings get_settings(DBAState& state);

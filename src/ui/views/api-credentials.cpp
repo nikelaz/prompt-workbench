@@ -8,9 +8,6 @@ void ui::views::api_credentials(
     vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm
 )
 {
-
-    ui::components::spacer(12.0f);
-
     ImGui::PushFont(fonts.heading);
     ImGui::Text("Settings");
     ImGui::PopFont();

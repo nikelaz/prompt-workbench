@@ -8,19 +8,21 @@ using std::vector;
 
 optional<int64_t> dba::create_result_run(
     DBAState& state,
-    const string& date, 
-    int64_t test_suite_id
+    const string& date,
+    int64_t test_suite_id,
+    const string& system_prompt
 )
 {
     try
     {
         (*state.db) << R"(
             INSERT INTO result_runs
-            (date, test_suite_id)
-            values (?, ?)
+            (date, test_suite_id, system_prompt)
+            values (?, ?, ?)
         )"
             << date
-            << test_suite_id;
+            << test_suite_id
+            << system_prompt;
 
         return state.db->last_insert_rowid();
     } 
@@ -35,22 +37,24 @@ optional<ResultRun> dba::get_result_run(DBAState& state, int64_t id)
 {
     optional<ResultRun> result;
 
-    (*state.db) << R"( 
+    (*state.db) << R"(
         SELECT
-        date, test_suite_id
-        FROM result_runs 
+        date, test_suite_id, system_prompt
+        FROM result_runs
         WHERE id == ?;
     )"
         << id
         >> [&](
             string date,
-            int64_t test_suite_id
+            int64_t test_suite_id,
+            string system_prompt
         )
         {
             result = ResultRun {
                 id,
                 date,
                 test_suite_id,
+                system_prompt,
             };
         };
 
@@ -61,23 +65,25 @@ vector<ResultRun> dba::get_all_result_runs(DBAState& state, int64_t test_suite_i
 {
     vector<ResultRun> result_runs;
 
-    (*state.db) << R"( 
+    (*state.db) << R"(
         SELECT
-        id, date
+        id, date, system_prompt
         FROM result_runs
         WHERE test_suite_id = ?;
     )"
         << test_suite_id
         >> [&](
             int64_t id,
-            string date
+            string date,
+            string system_prompt
         )
         {
             result_runs.emplace_back(
                 id,
                 date,
-                test_suite_id
-            ); 
+                test_suite_id,
+                system_prompt
+            );
         };
 
     return result_runs;

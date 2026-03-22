@@ -8,7 +8,7 @@ using std::vector;
 
 optional<int64_t> dba::create_answer(
     DBAState& state,
-    const string& answer, 
+    const string& answer,
     int64_t user_prompt_id,
     int64_t result_run_id
 )
@@ -16,7 +16,7 @@ optional<int64_t> dba::create_answer(
     try
     {
         (*state.db) << R"(
-            INSERT INTO answers 
+            INSERT INTO answers
             (answer, user_prompt_id, result_run_id)
             values (?, ?, ?)
         )"
@@ -25,7 +25,7 @@ optional<int64_t> dba::create_answer(
             << result_run_id;
 
         return state.db->last_insert_rowid();
-    } 
+    }
     catch (const std::exception& e)
     {
         std::cerr << "Unexpected error: " << e.what() << std::endl;
@@ -33,14 +33,35 @@ optional<int64_t> dba::create_answer(
     }
 }
 
-optional<Answer> dba::get_answer(DBAState& state, int64_t id) 
+void dba::store_embedding(
+    DBAState& state,
+    int64_t answer_id,
+    const vector<float>& embedding
+)
+{
+    try
+    {
+        (*state.db) << R"(
+            INSERT OR REPLACE INTO answer_embeddings (answer_id, embedding)
+            VALUES (?, ?)
+        )"
+            << answer_id
+            << embedding;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
+    }
+}
+
+optional<Answer> dba::get_answer(DBAState& state, int64_t id)
 {
     optional<Answer> result;
 
-    (*state.db) << R"( 
+    (*state.db) << R"(
         SELECT
         answer, user_prompt_id, result_run_id
-        FROM answers 
+        FROM answers
         WHERE id == ?;
     )"
         << id
@@ -61,30 +82,34 @@ optional<Answer> dba::get_answer(DBAState& state, int64_t id)
     return result;
 }
 
-vector<Answer> dba::get_all_answers(DBAState& state, int64_t result_run_id) 
+vector<Answer> dba::get_all_answers(DBAState& state, int64_t result_run_id)
 {
     vector<Answer> answers;
 
-    (*state.db) << R"( 
+    (*state.db) << R"(
         SELECT
-        id, answer, user_prompt_id, result_run_id
-        FROM answers 
-        WHERE result_run_id = ?;
+            a.id, a.answer, a.user_prompt_id, a.result_run_id,
+            ae.embedding
+        FROM answers a
+        LEFT JOIN answer_embeddings ae ON ae.answer_id = a.id
+        WHERE a.result_run_id = ?;
     )"
         << result_run_id
         >> [&](
             int64_t id,
             string answer,
             int64_t user_prompt_id,
-            int64_t result_run_id
+            int64_t run_id,
+            vector<float> embedding
         )
         {
-            answers.emplace_back(
+            answers.emplace_back(Answer{
                 id,
-                answer,
+                std::move(answer),
                 user_prompt_id,
-                result_run_id
-            ); 
+                run_id,
+                std::move(embedding)
+            });
         };
 
     return answers;
@@ -93,11 +118,11 @@ vector<Answer> dba::get_all_answers(DBAState& state, int64_t result_run_id)
 bool dba::update_answer(
     DBAState& state,
     int64_t id,
-    const optional<string>& answer, 
+    const optional<string>& answer,
     optional<int64_t> user_prompt_id,
     optional<int64_t> result_run_id
 )
-{ 
+{
     try
     {
         string sql = "UPDATE answers SET ";
@@ -156,13 +181,13 @@ bool dba::delete_answer(DBAState& state, int64_t id)
     try
     {
         (*state.db) << R"(
-            DELETE FROM answers 
+            DELETE FROM answers
             WHERE id = ?
         )"
             << id;
 
         return true;
-    } 
+    }
     catch (const std::exception& e)
     {
         std::cerr << "Unexpected error: " << e.what() << std::endl;

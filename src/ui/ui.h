@@ -53,8 +53,21 @@ namespace ui {
         );
         void result_run_details(
             routing::Router& router,
+            dba::DBAState& dba_state,
+            fonts::Fonts& fonts,
+            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
+            vm::user_prompt::UserPromptViewModel& user_prompt_vm,
+            vm::compare_result_runs::CompareResultRunsViewModel& compare_vm
+        );
+        void answer_details(
+            routing::Router& router,
             fonts::Fonts& fonts,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm
+        );
+        void compare_result_runs(
+            routing::Router& router,
+            fonts::Fonts& fonts,
+            vm::compare_result_runs::CompareResultRunsViewModel& compare_vm
         );
         void api_credentials(
             dba::DBAState& dba_state,
@@ -65,7 +78,8 @@ namespace ui {
     }
 
     namespace components {
-        bool button(const std::string&); 
+        bool button(const std::string&);
+        bool secondary_button(const std::string&);
         void main_frame(
             dba::DBAState& dba_state,
             fonts::Fonts& fonts,
@@ -76,7 +90,8 @@ namespace ui {
             vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm,
             vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm,
             vm::run_tests::RunTestsViewModel& run_tests_vm,
-            vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm
+            vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm,
+            vm::compare_result_runs::CompareResultRunsViewModel& compare_vm
         );
         bool input(
             const char* label,
@@ -111,5 +126,12 @@ namespace ui {
         );
         void content_container(std::function<void()> children);
         void spacer(float height);
+        bool confirm_dialog(
+            const char* id,
+            const char* title,
+            const char* message,
+            const char* confirm_label = "Confirm",
+            const char* cancel_label = "Cancel"
+        );
     }
 }

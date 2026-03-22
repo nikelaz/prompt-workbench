@@ -11,6 +11,8 @@ namespace routing {
         USER_PROMPT_DETAILS,
         CREATE_USER_PROMPTS,
         RESULT_RUN_DETAILS,
+        ANSWER_DETAILS,
+        COMPARE_RESULT_RUNS,
         API_CREDENTIALS,
         PAGE_2
     };

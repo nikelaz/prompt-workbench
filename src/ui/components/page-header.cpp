@@ -13,13 +13,10 @@ void ui::components::page_header(
     const float button_padding_y = 7.0f; // must match frame padding y in button.cpp
     const float button_height    = ImGui::GetFontSize() + 2.0f * button_padding_y;
     const float row_height       = std::max(heading_height, button_height);
-
-    ui::components::spacer(12.0f);
-
     float row_y = ImGui::GetCursorPosY();
 
     ImGui::SetCursorPosY(row_y + (row_height - button_height) * 0.5f);
-    if (ui::components::button("Back"))
+    if (ui::components::secondary_button("Back"))
     {
         routing::back(router);
     }

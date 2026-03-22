@@ -13,9 +13,6 @@ void ui::views::test_suites(
     float heading_height = 24.0f;
     float button_height = ImGui::GetFontSize() + 2.0f * 7.0f; // font + 2 * frame padding y
     float row_height = std::max(heading_height, button_height);
-
-    ui::components::spacer(12.0f);
-
     float row_y = ImGui::GetCursorPosY();
 
     ImGui::SetCursorPosY(row_y + (row_height - heading_height) * 0.5f);

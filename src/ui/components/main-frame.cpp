@@ -88,7 +88,8 @@ void ui::components::main_frame(
     vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm,
     vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm,
     vm::run_tests::RunTestsViewModel& run_tests_vm,
-    vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm
+    vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm,
+    vm::compare_result_runs::CompareResultRunsViewModel& compare_vm
 )
 {
     static routing::Router router = routing::init(routing::TEST_SUITES); 
@@ -122,75 +123,82 @@ void ui::components::main_frame(
     });
 
     main_content([&]() {
-        ui::components::content_container([&]() {
-        switch(router.current_route) {
-            case routing::TEST_SUITES:
-                ui::views::test_suites(
-                    router,
-                    dba_state,
-                    fonts,
-                    test_suites_vm,
-                    user_prompt_vm
-                );
-                break;
-            case routing::TEST_SUITES_DETAILS:
-                ui::views::test_suite_details(
-                    router,
-                    dba_state,
-                    fonts,
-                    test_suites_vm,
-                    user_prompt_vm,
-                    result_run_details_vm,
-                    run_tests_vm,
-                    edit_test_suite_vm
-                );
-                break;
-            case routing::EDIT_TEST_SUITE:
-                ui::views::edit_test_suite(
-                    router,
-                    dba_state,
-                    fonts,
-                    test_suites_vm,
-                    edit_test_suite_vm
-                );
-                break;
-            case routing::CREATE_TEST_SUITE:
-                ui::views::create_test_suite(
-                    router,
-                    dba_state,
-                    fonts,
-                    test_suites_vm,
-                    create_test_suite_vm
-                ); 
-                break;
-            case routing::USER_PROMPT_DETAILS:
-                ui::views::user_prompt_details(router, fonts, user_prompt_vm); 
-                break;
-            case routing::CREATE_USER_PROMPTS:
-                ui::views::create_user_prompts(
-                    router,
-                    dba_state,
-                    fonts,
-                    create_user_prompt_vm,
-                    user_prompt_vm
-                ); 
-                break;
-            case routing::RESULT_RUN_DETAILS:
-                ui::views::result_run_details(router, fonts, result_run_details_vm); 
-                break;
-            case routing::API_CREDENTIALS:
-                ui::views::api_credentials(
-                    dba_state,
-                    fonts,
-                    api_credentials_vm
-                );
-                break;
-            case routing::PAGE_2:
-                ImGui::Text("Page 2");
-                break;
-            default:
-                ImGui::Text("404");
+        if (router.current_route == routing::COMPARE_RESULT_RUNS) {
+            ui::views::compare_result_runs(router, fonts, compare_vm);
+        } else {
+            ui::components::content_container([&]() {
+            switch(router.current_route) {
+                case routing::TEST_SUITES:
+                    ui::views::test_suites(
+                        router,
+                        dba_state,
+                        fonts,
+                        test_suites_vm,
+                        user_prompt_vm
+                    );
+                    break;
+                case routing::TEST_SUITES_DETAILS:
+                    ui::views::test_suite_details(
+                        router,
+                        dba_state,
+                        fonts,
+                        test_suites_vm,
+                        user_prompt_vm,
+                        result_run_details_vm,
+                        run_tests_vm,
+                        edit_test_suite_vm
+                    );
+                    break;
+                case routing::EDIT_TEST_SUITE:
+                    ui::views::edit_test_suite(
+                        router,
+                        dba_state,
+                        fonts,
+                        test_suites_vm,
+                        edit_test_suite_vm
+                    );
+                    break;
+                case routing::CREATE_TEST_SUITE:
+                    ui::views::create_test_suite(
+                        router,
+                        dba_state,
+                        fonts,
+                        test_suites_vm,
+                        create_test_suite_vm
+                    );
+                    break;
+                case routing::USER_PROMPT_DETAILS:
+                    ui::views::user_prompt_details(router, fonts, user_prompt_vm);
+                    break;
+                case routing::CREATE_USER_PROMPTS:
+                    ui::views::create_user_prompts(
+                        router,
+                        dba_state,
+                        fonts,
+                        create_user_prompt_vm,
+                        user_prompt_vm
+                    );
+                    break;
+                case routing::RESULT_RUN_DETAILS:
+                    ui::views::result_run_details(router, dba_state, fonts, result_run_details_vm, user_prompt_vm, compare_vm);
+                    break;
+                case routing::ANSWER_DETAILS:
+                    ui::views::answer_details(router, fonts, result_run_details_vm);
+                    break;
+                case routing::API_CREDENTIALS:
+                    ui::views::api_credentials(
+                        dba_state,
+                        fonts,
+                        api_credentials_vm
+                    );
+                    break;
+                case routing::PAGE_2:
+                    ImGui::Text("Page 2");
+                    break;
+                default:
+                    ImGui::Text("404");
+            }
+            });
         }
-        });
     });
 }
