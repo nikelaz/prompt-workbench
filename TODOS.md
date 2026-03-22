@@ -2,8 +2,6 @@
 
 * [ ] Edit result runs title for easier identification
 * [ ] Better UI and layouts of result runs, test suite details and user prompts
-* [ ] Download embeddings model on first run if not downloaded
-* [ ] Offer multiple embeddings model options
 * [ ] Compile on Windows
 * [ ] Compile on macOS
 * [ ] Major refactoring and code review
