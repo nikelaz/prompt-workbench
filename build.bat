@@ -7,7 +7,9 @@ if not exist "%VSWHERE%" (
     exit /b 1
 )
 for /f "usebackq delims=" %%i in (`"%VSWHERE%" -latest -property installationPath`) do set "VS_PATH=%%i"
+set "USER_VCPKG_ROOT=%VCPKG_ROOT%"
 call "%VS_PATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+if not "%USER_VCPKG_ROOT%"=="" set "VCPKG_ROOT=%USER_VCPKG_ROOT%"
 
 if "%VCPKG_ROOT%"=="" (
     echo Error: VCPKG_ROOT environment variable is not set.
