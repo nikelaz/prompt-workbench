@@ -134,6 +134,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   target_sources(app PRIVATE src/platform/accent_color_linux.cpp)
 else()
   target_sources(app PRIVATE src/platform/accent_color_stub.cpp)
+  if(WIN32)
+    set_target_properties(app PROPERTIES WIN32_EXECUTABLE TRUE)
+    target_link_options(app PRIVATE /ENTRY:mainCRTStartup)
+  endif()
 endif()
 
 add_custom_command(TARGET app POST_BUILD

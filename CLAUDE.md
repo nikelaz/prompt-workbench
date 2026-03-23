@@ -38,14 +38,14 @@ Executable output: `./build/bin/app`
 - **Visual Studio 2022** with "Desktop development with C++" workload (provides MSVC C++23 and Ninja)
 - **CMake 3.25+** (bundled with VS, or install standalone and add to PATH)
 - **Git**
-- **vcpkg** — install and set `VCPKG_ROOT` environment variable
+- **vcpkg** — install and set `VCPKG_ROOT` as a **persistent system/user environment variable** (not just in the current shell session — `build.bat` calls `vcvarsall.bat` which would otherwise overwrite it)
 
 **vcpkg packages** (run once after installing vcpkg):
 ```
 vcpkg install freetype:x64-windows sqlite3:x64-windows openssl:x64-windows
 ```
 
-**Build and run:**
+**Build and run** (plain `cmd.exe` — no Developer Command Prompt needed):
 ```bat
 git submodule update --init --recursive
 build.bat   :: build only
