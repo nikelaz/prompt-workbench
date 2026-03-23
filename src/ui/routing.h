@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 namespace routing {
     enum Route {
         TEST_SUITES,
@@ -23,7 +21,6 @@ namespace routing {
 
     struct Router {
         Route current_route;
-        std::vector<Route> history;
     };
 
     Router init(Route default_route);
