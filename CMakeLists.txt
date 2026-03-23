@@ -7,6 +7,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(external/glfw)
 set(CPR_CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE)
+# MSVC natively supports <filesystem> — skip cpr's try_compile probe which fails in CMake subprocesses on Windows
+set(STD_FS_SUPPORTED TRUE CACHE INTERNAL "" FORCE)
 add_subdirectory(external/cpr)
 add_subdirectory(external/json)
 
