@@ -53,7 +53,7 @@ void ui::views::compare_result_runs(
 
     ui::components::spacer(8.0f);
 
-    if (ui::components::button("View Full System Prompt Comparison"))
+    if (ui::components::secondary_button("View Full System Prompt Comparison"))
         routing::push(router, routing::SYSTEM_PROMPT_COMPARISON);
 
     ui::components::spacer(16.0f);
@@ -74,11 +74,8 @@ void ui::views::compare_result_runs(
         {
             const UserPrompt& up = compare_vm.user_prompts[i];
 
-            std::string answer_a, answer_b;
-            for (const Answer& a : compare_vm.answers_a)
-                if (a.user_prompt_id == up.id) { answer_a = a.answer; break; }
-            for (const Answer& a : compare_vm.answers_b)
-                if (a.user_prompt_id == up.id) { answer_b = a.answer; break; }
+            const std::string& answer_a = compare_vm.answers_a[i].answer;
+            const std::string& answer_b = compare_vm.answers_b[i].answer;
 
             ImGui::TableNextRow();
 

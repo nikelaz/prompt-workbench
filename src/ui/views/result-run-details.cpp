@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "fonts.h"
 #include "helpers.h"
+#include <GLFW/glfw3.h>
 
 void ui::views::result_run_details(
     routing::Router& router,
@@ -76,8 +77,10 @@ void ui::views::result_run_details(
     ImGui::TextWrapped("%s", sp_preview.c_str());
     if (sp_truncated) {
         ui::components::spacer(4.0f);
-        if (ui::components::secondary_button("View Full System Prompt"))
+        if (ui::components::secondary_button("View Full System Prompt")) {
             ImGui::OpenPopup("##full_system_prompt");
+            glfwPostEmptyEvent();
+        }
     }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
@@ -105,8 +108,10 @@ void ui::views::result_run_details(
             ImGuiInputTextFlags_ReadOnly
         );
         ui::components::spacer(8.0f);
-        if (ui::components::secondary_button("Close"))
+        if (ui::components::secondary_button("Close")) {
             ImGui::CloseCurrentPopup();
+            glfwPostEmptyEvent();
+        }
         ImGui::EndPopup();
     }
 
@@ -115,6 +120,7 @@ void ui::views::result_run_details(
     if (ui::components::secondary_button("Compare"))
     {
         ImGui::OpenPopup("##compare_run_select");
+        glfwPostEmptyEvent();
     }
 
     ImGui::SameLine();
@@ -177,6 +183,7 @@ void ui::views::result_run_details(
         {
             selected_idx = -1;
             ImGui::CloseCurrentPopup();
+            glfwPostEmptyEvent();
         }
 
         ImGui::SameLine();
@@ -194,6 +201,7 @@ void ui::views::result_run_details(
             );
             selected_idx = -1;
             ImGui::CloseCurrentPopup();
+            glfwPostEmptyEvent();
             routing::push(router, routing::COMPARE_RESULT_RUNS);
         }
         if (compare_disabled) ImGui::EndDisabled();

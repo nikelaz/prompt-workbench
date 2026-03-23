@@ -3,9 +3,10 @@
 * [x] Edit result runs title for easier identification
 * [x] Better UI and layouts of result runs, test suite details and user prompts
 * [x] Handle missing UI features and basic UI edge cases
-* [ ] Back button should be hierarchy based not stack based
+* [x] Back button should be hierarchy based not stack based
 * [x] Better startup times by loading llama.cpp in a separate thread 
 * [x] Compile on Windows
+* [ ] Rework the UI to be prompt-centric and test suites as secondary
 * [ ] Code review and refactoring
 * [ ] Performance optimizations
 * [ ] Technical documentation and agent instructions

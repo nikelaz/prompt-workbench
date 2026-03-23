@@ -3,6 +3,7 @@
 #include "fonts.h"
 #include "helpers.h"
 #include "accent_color.h"
+#include <GLFW/glfw3.h>
 
 void ui::views::test_suite_details(
     routing::Router& router,
@@ -57,8 +58,10 @@ void ui::views::test_suite_details(
             ImGui::EndChild();
             ImGui::TextDisabled("...");
             ui::components::spacer(4.0f);
-            if (ui::components::secondary_button("View Full System Prompt"))
+            if (ui::components::secondary_button("View Full System Prompt")) {
                 ImGui::OpenPopup("##full_system_prompt");
+                glfwPostEmptyEvent();
+            }
         } else {
             ImGui::TextWrapped("%s", sys_prompt);
         }
@@ -89,8 +92,10 @@ void ui::views::test_suite_details(
             ImGuiInputTextFlags_ReadOnly
         );
         ui::components::spacer(8.0f);
-        if (ui::components::secondary_button("Close"))
+        if (ui::components::secondary_button("Close")) {
             ImGui::CloseCurrentPopup();
+            glfwPostEmptyEvent();
+        }
         ImGui::EndPopup();
     }
 

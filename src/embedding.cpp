@@ -6,6 +6,7 @@
 #include <iostream>
 
 static llama_model* g_model = nullptr;
+static llama_context* g_ctx = nullptr;
 static std::atomic<bool> g_loading{false};
 static std::atomic<bool> g_available{false};
 static std::thread g_load_thread;
@@ -18,9 +19,22 @@ bool embedding::init(const std::string& model_path)
         llama_model_params mparams = llama_model_default_params();
         mparams.n_gpu_layers = 0;
         g_model = llama_model_load_from_file(model_path.c_str(), mparams);
-        if (!g_model)
+        if (!g_model) {
             std::cerr << "[embedding] Failed to load model from: " << model_path << "\n";
-        g_available.store(g_model != nullptr);
+            g_loading.store(false);
+            return;
+        }
+        llama_context_params cparams = llama_context_default_params();
+        cparams.n_ctx        = 8192;
+        cparams.n_batch      = 8192;
+        cparams.n_ubatch     = 8192;
+        cparams.embeddings   = true;
+        cparams.pooling_type = LLAMA_POOLING_TYPE_MEAN;
+        cparams.n_threads    = static_cast<uint32_t>(std::thread::hardware_concurrency());
+        g_ctx = llama_init_from_model(g_model, cparams);
+        if (!g_ctx)
+            std::cerr << "[embedding] Failed to create context\n";
+        g_available.store(g_ctx != nullptr);
         g_loading.store(false);
     });
     return true;
@@ -29,6 +43,10 @@ bool embedding::init(const std::string& model_path)
 void embedding::deinit()
 {
     if (g_load_thread.joinable()) g_load_thread.join();
+    if (g_ctx) {
+        llama_free(g_ctx);
+        g_ctx = nullptr;
+    }
     if (g_model) {
         llama_model_free(g_model);
         g_model = nullptr;
@@ -48,16 +66,9 @@ bool embedding::is_loading()
 
 std::vector<float> embedding::compute(const std::string& text)
 {
-    if (!g_model || text.empty()) return {};
+    if (!g_ctx || text.empty()) return {};
 
-    llama_context_params cparams = llama_context_default_params();
     const int n_ctx = 8192;
-    cparams.n_ctx         = n_ctx;
-    cparams.n_batch       = n_ctx;
-    cparams.n_ubatch      = n_ctx;
-    cparams.embeddings    = true;
-    cparams.pooling_type  = LLAMA_POOLING_TYPE_MEAN;
-    cparams.n_threads     = static_cast<uint32_t>(std::thread::hardware_concurrency());
 
     // nomic-embed-text-v1.5 requires a task prefix; "clustering:" is correct
     // for symmetric document-to-document similarity comparison
@@ -75,24 +86,15 @@ std::vector<float> embedding::compute(const std::string& text)
     int n_embd = llama_model_n_embd(g_model);
 
     auto embed_chunk = [&](llama_token* chunk_tokens, int chunk_len) -> std::vector<float> {
-        llama_context* ctx = llama_init_from_model(g_model, cparams);
-        if (!ctx) return {};
-
+        llama_memory_clear(llama_get_memory(g_ctx), false);
         llama_batch batch = llama_batch_get_one(chunk_tokens, chunk_len);
-        if (llama_decode(ctx, batch) != 0) {
-            llama_free(ctx);
+        if (llama_decode(g_ctx, batch) != 0)
             return {};
-        }
 
-        float* emb = llama_get_embeddings_seq(ctx, 0);
-        if (!emb) {
-            llama_free(ctx);
-            return {};
-        }
+        float* emb = llama_get_embeddings_seq(g_ctx, 0);
+        if (!emb) return {};
 
-        std::vector<float> vec(emb, emb + n_embd);
-        llama_free(ctx);
-        return vec;
+        return std::vector<float>(emb, emb + n_embd);
     };
 
     std::vector<float> result;

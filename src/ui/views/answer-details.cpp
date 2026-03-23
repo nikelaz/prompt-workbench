@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "fonts.h"
 #include "helpers.h"
+#include <GLFW/glfw3.h>
 
 void ui::views::answer_details(
     routing::Router& router,
@@ -37,8 +38,10 @@ void ui::views::answer_details(
         ImGui::TextWrapped("%s", sp_preview.c_str());
         if (sp_truncated) {
             ui::components::spacer(4.0f);
-            if (ui::components::secondary_button("View Full System Prompt"))
+            if (ui::components::secondary_button("View Full System Prompt")) {
                 ImGui::OpenPopup("##full_system_prompt");
+                glfwPostEmptyEvent();
+            }
         }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
@@ -66,8 +69,10 @@ void ui::views::answer_details(
                 ImGuiInputTextFlags_ReadOnly
             );
             ui::components::spacer(8.0f);
-            if (ui::components::secondary_button("Close"))
+            if (ui::components::secondary_button("Close")) {
                 ImGui::CloseCurrentPopup();
+                glfwPostEmptyEvent();
+            }
             ImGui::EndPopup();
         }
 
@@ -82,8 +87,10 @@ void ui::views::answer_details(
         ImGui::TextWrapped("%s", up_preview.c_str());
         if (up_truncated) {
             ui::components::spacer(4.0f);
-            if (ui::components::secondary_button("View Full User Prompt"))
+            if (ui::components::secondary_button("View Full User Prompt")) {
                 ImGui::OpenPopup("##full_user_prompt");
+                glfwPostEmptyEvent();
+            }
         }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
@@ -111,8 +118,10 @@ void ui::views::answer_details(
                 ImGuiInputTextFlags_ReadOnly
             );
             ui::components::spacer(8.0f);
-            if (ui::components::secondary_button("Close"))
+            if (ui::components::secondary_button("Close")) {
                 ImGui::CloseCurrentPopup();
+                glfwPostEmptyEvent();
+            }
             ImGui::EndPopup();
         }
 
