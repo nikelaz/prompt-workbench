@@ -30,7 +30,7 @@ if(NOT EXISTS "${EMBED_MODEL_SRC}")
     endif()
 endif()
 
-find_package(Freetype REQUIRED)
+find_package(Freetype REQUIRED CONFIG)
 
 add_library(imgui STATIC
     external/imgui/imgui.cpp
