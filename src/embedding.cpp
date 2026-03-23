@@ -1,29 +1,34 @@
 #include "embedding.h"
 #include "llama.h"
+#include <atomic>
 #include <cmath>
 #include <thread>
 #include <iostream>
 
 static llama_model* g_model = nullptr;
+static std::atomic<bool> g_loading{false};
+static std::atomic<bool> g_available{false};
+static std::thread g_load_thread;
 
 bool embedding::init(const std::string& model_path)
 {
-    llama_backend_init();
-
-    llama_model_params mparams = llama_model_default_params();
-    mparams.n_gpu_layers = 0;
-
-    g_model = llama_model_load_from_file(model_path.c_str(), mparams);
-    if (!g_model) {
-        std::cerr << "[embedding] Failed to load model from: " << model_path << std::endl;
-        return false;
-    }
-
+    g_loading.store(true);
+    g_load_thread = std::thread([model_path]() {
+        llama_backend_init();
+        llama_model_params mparams = llama_model_default_params();
+        mparams.n_gpu_layers = 0;
+        g_model = llama_model_load_from_file(model_path.c_str(), mparams);
+        if (!g_model)
+            std::cerr << "[embedding] Failed to load model from: " << model_path << "\n";
+        g_available.store(g_model != nullptr);
+        g_loading.store(false);
+    });
     return true;
 }
 
 void embedding::deinit()
 {
+    if (g_load_thread.joinable()) g_load_thread.join();
     if (g_model) {
         llama_model_free(g_model);
         g_model = nullptr;
@@ -33,7 +38,12 @@ void embedding::deinit()
 
 bool embedding::is_available()
 {
-    return g_model != nullptr;
+    return g_available.load();
+}
+
+bool embedding::is_loading()
+{
+    return g_loading.load();
 }
 
 std::vector<float> embedding::compute(const std::string& text)

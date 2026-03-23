@@ -7,5 +7,6 @@ namespace embedding {
     bool init(const std::string& model_path);
     void deinit();
     bool is_available();
+    bool is_loading();
     std::vector<float> compute(const std::string& text);
 }
