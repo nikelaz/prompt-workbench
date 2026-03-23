@@ -17,6 +17,14 @@ set(LLAMA_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
 set(LLAMA_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(LLAMA_BUILD_SERVER   OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/llama.cpp)
+# llama.cpp uses u8"" literals as const char* — disable char8_t on MSVC to match pre-C++20 behavior
+if(MSVC)
+    foreach(_target llama ggml ggml-base ggml-cpu)
+        if(TARGET ${_target})
+            target_compile_options(${_target} PRIVATE /Zc:char8_t-)
+        endif()
+    endforeach()
+endif()
 
 # Download embedding model at configure time if missing
 set(EMBED_MODEL_FILENAME "nomic-embed-text-v1.5.Q8_0.gguf")
