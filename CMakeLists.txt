@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(external/glfw)
+set(CPR_CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/cpr)
 add_subdirectory(external/json)
 
