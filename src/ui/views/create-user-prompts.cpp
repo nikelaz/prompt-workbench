@@ -37,7 +37,7 @@ void ui::views::create_user_prompts(
 
             vm::user_prompt::refresh(user_prompt_vm, dba_state);
 
-            routing::push(router, routing::TEST_SUITES_DETAILS);
+            routing::push(router, routing::USER_PROMPTS_LIST);
 
             create_user_prompt_vm.prompt = "";
         }

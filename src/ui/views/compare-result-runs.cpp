@@ -24,6 +24,15 @@ void ui::views::compare_result_runs(
 
     bool prompts_differ = (compare_vm.run_a.system_prompt != compare_vm.run_b.system_prompt);
 
+    auto truncate_preview = [](const std::string& s, int max_lines = 4) -> std::string {
+        int newlines = 0;
+        for (size_t i = 0; i < s.size(); ++i) {
+            if (s[i] == '\n' && ++newlines == max_lines)
+                return s.substr(0, i) + "\n...";
+        }
+        return s;
+    };
+
     if (ImGui::BeginTable("##system_prompts", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
     {
         ImGui::TableSetupColumn(label_a.c_str(), ImGuiTableColumnFlags_WidthStretch);
@@ -35,12 +44,17 @@ void ui::views::compare_result_runs(
             ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, IM_COL32(100, 80, 0, 100));
 
         ImGui::TableSetColumnIndex(0);
-        ImGui::TextWrapped("%s", compare_vm.run_a.system_prompt.c_str());
+        ImGui::TextWrapped("%s", truncate_preview(compare_vm.run_a.system_prompt).c_str());
         ImGui::TableSetColumnIndex(1);
-        ImGui::TextWrapped("%s", compare_vm.run_b.system_prompt.c_str());
+        ImGui::TextWrapped("%s", truncate_preview(compare_vm.run_b.system_prompt).c_str());
 
         ImGui::EndTable();
     }
+
+    ui::components::spacer(8.0f);
+
+    if (ui::components::button("View Full System Prompt Comparison"))
+        routing::push(router, routing::SYSTEM_PROMPT_COMPARISON);
 
     ui::components::spacer(16.0f);
 

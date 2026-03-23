@@ -41,47 +41,75 @@ std::vector<float> embedding::compute(const std::string& text)
     if (!g_model || text.empty()) return {};
 
     llama_context_params cparams = llama_context_default_params();
-    cparams.n_ctx         = 8192;
-    cparams.n_batch       = 8192;
+    const int n_ctx = 8192;
+    cparams.n_ctx         = n_ctx;
+    cparams.n_batch       = n_ctx;
+    cparams.n_ubatch      = n_ctx;
     cparams.embeddings    = true;
     cparams.pooling_type  = LLAMA_POOLING_TYPE_MEAN;
     cparams.n_threads     = static_cast<uint32_t>(std::thread::hardware_concurrency());
-
-    llama_context* ctx = llama_init_from_model(g_model, cparams);
-    if (!ctx) return {};
 
     // nomic-embed-text-v1.5 requires a task prefix; "clustering:" is correct
     // for symmetric document-to-document similarity comparison
     std::string prefixed = "clustering: " + text;
 
-    // Tokenize
+    // Tokenize into a buffer large enough for the full text
     const llama_vocab* vocab = llama_model_get_vocab(g_model);
-    std::vector<llama_token> tokens(8192);
+    std::vector<llama_token> tokens(prefixed.size() + 16);
     int n = llama_tokenize(vocab, prefixed.c_str(), static_cast<int>(prefixed.size()),
                            tokens.data(), static_cast<int>(tokens.size()),
                            true, false);
-    if (n < 0) {
-        llama_free(ctx);
-        return {};
-    }
+    if (n < 0) return {};
     tokens.resize(n);
 
-    // Run forward pass
-    llama_batch batch = llama_batch_get_one(tokens.data(), static_cast<int>(tokens.size()));
-    if (llama_decode(ctx, batch) != 0) {
-        llama_free(ctx);
-        return {};
-    }
-
-    // Get pooled embedding for sequence 0
-    float* emb = llama_get_embeddings_seq(ctx, 0);
-    if (!emb) {
-        llama_free(ctx);
-        return {};
-    }
-
     int n_embd = llama_model_n_embd(g_model);
-    std::vector<float> result(emb, emb + n_embd);
+
+    auto embed_chunk = [&](llama_token* chunk_tokens, int chunk_len) -> std::vector<float> {
+        llama_context* ctx = llama_init_from_model(g_model, cparams);
+        if (!ctx) return {};
+
+        llama_batch batch = llama_batch_get_one(chunk_tokens, chunk_len);
+        if (llama_decode(ctx, batch) != 0) {
+            llama_free(ctx);
+            return {};
+        }
+
+        float* emb = llama_get_embeddings_seq(ctx, 0);
+        if (!emb) {
+            llama_free(ctx);
+            return {};
+        }
+
+        std::vector<float> vec(emb, emb + n_embd);
+        llama_free(ctx);
+        return vec;
+    };
+
+    std::vector<float> result;
+
+    if (n <= n_ctx) {
+        result = embed_chunk(tokens.data(), n);
+    } else {
+        // Chunk + mean-pool for texts exceeding the context window
+        std::vector<float> sum(n_embd, 0.0f);
+        int chunk_count = 0;
+
+        for (int start = 0; start < n; start += n_ctx) {
+            int end = std::min(start + n_ctx, n);
+            std::vector<float> chunk_emb = embed_chunk(tokens.data() + start, end - start);
+            if (chunk_emb.empty()) return {};
+
+            for (int i = 0; i < n_embd; ++i)
+                sum[i] += chunk_emb[i];
+            ++chunk_count;
+        }
+
+        result.resize(n_embd);
+        for (int i = 0; i < n_embd; ++i)
+            result[i] = sum[i] / static_cast<float>(chunk_count);
+    }
+
+    if (result.empty()) return {};
 
     // L2 normalize
     float norm = 0.0f;
@@ -90,6 +118,5 @@ std::vector<float> embedding::compute(const std::string& text)
     if (norm > 0.0f)
         for (float& v : result) v /= norm;
 
-    llama_free(ctx);
     return result;
 }

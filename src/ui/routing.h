@@ -11,10 +11,12 @@ namespace routing {
         USER_PROMPT_DETAILS,
         USER_PROMPTS_LIST,
         CREATE_USER_PROMPTS,
+        EDIT_USER_PROMPT,
         RESULT_RUNS_LIST,
         RESULT_RUN_DETAILS,
         ANSWER_DETAILS,
         COMPARE_RESULT_RUNS,
+        SYSTEM_PROMPT_COMPARISON,
         API_CREDENTIALS,
         PAGE_2
     };

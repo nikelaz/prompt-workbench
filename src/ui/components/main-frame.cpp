@@ -89,7 +89,8 @@ void ui::components::main_frame(
     vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm,
     vm::run_tests::RunTestsViewModel& run_tests_vm,
     vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm,
-    vm::compare_result_runs::CompareResultRunsViewModel& compare_vm
+    vm::compare_result_runs::CompareResultRunsViewModel& compare_vm,
+    vm::edit_user_prompt::EditUserPromptViewModel& edit_user_prompt_vm
 )
 {
     static routing::Router router = routing::init(routing::TEST_SUITES); 
@@ -125,6 +126,8 @@ void ui::components::main_frame(
     main_content([&]() {
         if (router.current_route == routing::COMPARE_RESULT_RUNS) {
             ui::views::compare_result_runs(router, fonts, compare_vm);
+        } else if (router.current_route == routing::SYSTEM_PROMPT_COMPARISON) {
+            ui::views::system_prompt_comparison(router, fonts, compare_vm);
         } else {
             ui::components::content_container([&]() {
             switch(router.current_route) {
@@ -168,7 +171,10 @@ void ui::components::main_frame(
                     );
                     break;
                 case routing::USER_PROMPT_DETAILS:
-                    ui::views::user_prompt_details(router, fonts, user_prompt_vm);
+                    ui::views::user_prompt_details(router, dba_state, fonts, user_prompt_vm, edit_user_prompt_vm);
+                    break;
+                case routing::EDIT_USER_PROMPT:
+                    ui::views::edit_user_prompt(router, dba_state, fonts, user_prompt_vm, edit_user_prompt_vm);
                     break;
                 case routing::USER_PROMPTS_LIST:
                     ui::views::user_prompts_list(router, fonts, user_prompt_vm);

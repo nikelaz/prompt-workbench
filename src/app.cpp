@@ -112,6 +112,8 @@ void app::render_loop(
 
     vm::edit_test_suite::EditTestSuiteViewModel edit_test_suite_vm;
 
+    vm::edit_user_prompt::EditUserPromptViewModel edit_user_prompt_vm;
+
     vm::compare_result_runs::CompareResultRunsViewModel compare_vm =
         vm::compare_result_runs::init();
 
@@ -139,7 +141,8 @@ void app::render_loop(
             api_credentials_vm,
             run_tests_vm,
             edit_test_suite_vm,
-            compare_vm
+            compare_vm,
+            edit_user_prompt_vm
         );
 
         ImGui::Render();

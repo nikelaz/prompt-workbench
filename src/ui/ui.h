@@ -41,8 +41,17 @@ namespace ui {
         );
         void user_prompt_details(
             routing::Router& router,
+            dba::DBAState& dba_state,
             fonts::Fonts& fonts,
-            vm::user_prompt::UserPromptViewModel& user_prompt_details_vm
+            vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
+            vm::edit_user_prompt::EditUserPromptViewModel& edit_user_prompt_vm
+        );
+        void edit_user_prompt(
+            routing::Router& router,
+            dba::DBAState& dba_state,
+            fonts::Fonts& fonts,
+            vm::user_prompt::UserPromptViewModel& user_prompt_vm,
+            vm::edit_user_prompt::EditUserPromptViewModel& edit_user_prompt_vm
         );
         void user_prompts_list(
             routing::Router& router,
@@ -83,6 +92,11 @@ namespace ui {
             fonts::Fonts& fonts,
             vm::compare_result_runs::CompareResultRunsViewModel& compare_vm
         );
+        void system_prompt_comparison(
+            routing::Router& router,
+            fonts::Fonts& fonts,
+            vm::compare_result_runs::CompareResultRunsViewModel& compare_vm
+        );
         void api_credentials(
             dba::DBAState& dba_state,
             fonts::Fonts& fonts,
@@ -105,7 +119,8 @@ namespace ui {
             vm::api_credentials::ApiCredentialsViewModel& api_credentials_vm,
             vm::run_tests::RunTestsViewModel& run_tests_vm,
             vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm,
-            vm::compare_result_runs::CompareResultRunsViewModel& compare_vm
+            vm::compare_result_runs::CompareResultRunsViewModel& compare_vm,
+            vm::edit_user_prompt::EditUserPromptViewModel& edit_user_prompt_vm
         );
         bool input(
             const char* label,

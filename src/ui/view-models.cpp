@@ -166,20 +166,13 @@ void vm::create_test_suite::validate(
             "Title has to be less than 255 characters";
     }
 
-    if (!is_not_empty(create_test_suite_vm.description))
-    {
-        create_test_suite_vm.description_error.has_error = true;
-        create_test_suite_vm.description_error.message =
-            "Description is required";
-    }
-
     if (!has_max_length(
         create_test_suite_vm.description,
         1000
-    ))  
+    ))
     {
         create_test_suite_vm.description_error.has_error = true;
-        create_test_suite_vm.description_error.message = 
+        create_test_suite_vm.description_error.message =
             "Description has to be less than 1000 characters";
     }
 
@@ -280,12 +273,6 @@ void vm::edit_test_suite::validate(EditTestSuiteViewModel& vm)
     {
         vm.title_error.has_error = true;
         vm.title_error.message = "Title has to be less than 255 characters";
-    }
-
-    if (!is_not_empty(vm.description))
-    {
-        vm.description_error.has_error = true;
-        vm.description_error.message = "Description is required";
     }
 
     if (!has_max_length(vm.description, 1000))
@@ -580,7 +567,7 @@ void vm::create_user_prompt::create_user_prompt(
 }
 
 void vm::create_user_prompt::validate(
-    CreateUserPromptViewModel& create_user_prompt_vm   
+    CreateUserPromptViewModel& create_user_prompt_vm
 )
 {
     create_user_prompt_vm.prompt_error.has_error = false;
@@ -591,5 +578,44 @@ void vm::create_user_prompt::validate(
         create_user_prompt_vm.prompt_error.has_error = true;
         create_user_prompt_vm.prompt_error.message =
             "Prompt is required";
+    }
+}
+
+void vm::edit_user_prompt::prepare(
+    EditUserPromptViewModel& vm,
+    const UserPrompt& user_prompt
+)
+{
+    vm.id = user_prompt.id;
+    vm.prompt = user_prompt.prompt;
+    vm.prompt_error.has_error = false;
+    vm.prompt_error.message = "";
+}
+
+void vm::edit_user_prompt::update_user_prompt(
+    dba::DBAState& dba_state,
+    EditUserPromptViewModel& vm,
+    user_prompt::UserPromptViewModel& user_prompt_vm
+)
+{
+    dba::update_user_prompt(
+        dba_state,
+        vm.id,
+        optional<std::string>(vm.prompt),
+        std::nullopt
+    );
+
+    vm::user_prompt::refresh(user_prompt_vm, dba_state);
+}
+
+void vm::edit_user_prompt::validate(EditUserPromptViewModel& vm)
+{
+    vm.prompt_error.has_error = false;
+    vm.prompt_error.message = "";
+
+    if (!is_not_empty(vm.prompt))
+    {
+        vm.prompt_error.has_error = true;
+        vm.prompt_error.message = "Prompt is required";
     }
 }

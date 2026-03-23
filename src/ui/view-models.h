@@ -196,7 +196,7 @@ namespace vm
 
     namespace  create_user_prompt {
         struct CreateUserPromptViewModel
-        {       
+        {
             std::string prompt = "";
             errors::DisplayError prompt_error;
         };
@@ -208,7 +208,24 @@ namespace vm
             user_prompt::UserPromptViewModel& user_prompt_vm
         );
         void validate(
-            CreateUserPromptViewModel& create_user_prompt_vm   
+            CreateUserPromptViewModel& create_user_prompt_vm
         );
+    }
+
+    namespace edit_user_prompt {
+        struct EditUserPromptViewModel
+        {
+            int64_t id = 0;
+            std::string prompt = "";
+            errors::DisplayError prompt_error;
+        };
+
+        void prepare(EditUserPromptViewModel& vm, const UserPrompt& user_prompt);
+        void update_user_prompt(
+            dba::DBAState& dba_state,
+            EditUserPromptViewModel& vm,
+            user_prompt::UserPromptViewModel& user_prompt_vm
+        );
+        void validate(EditUserPromptViewModel& vm);
     }
 }

@@ -1,6 +1,7 @@
 #include "ui.h"
 #include "imgui.h"
 #include "fonts.h"
+#include "helpers.h"
 
 void ui::views::user_prompts_list(
     routing::Router& router,
@@ -38,11 +39,14 @@ void ui::views::user_prompts_list(
 
     ui::components::spacer(12.0f);
 
+    float card_text_width = ImGui::GetContentRegionAvail().x - 32.0f;
+
     for (UserPrompt user_prompt : user_prompt_vm.user_prompts)
     {
+        std::string preview = helpers::truncate_to_lines(user_prompt.prompt, card_text_width, 1);
         if (ui::components::card(
             "user_prompt_" + std::to_string(user_prompt.id),
-            user_prompt.prompt,
+            preview,
             std::nullopt,
             std::nullopt
         ))
