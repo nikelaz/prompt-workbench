@@ -26,11 +26,33 @@ Build and run (via scripts):
 
 Executable output: `./build/bin/app`
 
-### System Dependencies
+### Linux System Dependencies
 
 **RHEL/Fedora:** `mesa-libGL-devel glfw-devel libX11-devel libXrandr-devel libXi-devel libXinerama-devel libXcursor-devel wayland-devel sqlite-devel openssl-devel`
 
 **Ubuntu/Debian:** `libgl1-mesa-dev libglfw3-dev libx11-dev libxrandr-dev libxi-dev libxinerama-dev libxcursor-dev libwayland-dev libsqlite3-dev libssl-dev`
+
+### Windows
+
+**Required tools:**
+- **Visual Studio 2022** with "Desktop development with C++" workload (provides MSVC C++23 and Ninja)
+- **CMake 3.25+** (bundled with VS, or install standalone and add to PATH)
+- **Git**
+- **vcpkg** — install and set `VCPKG_ROOT` environment variable
+
+**vcpkg packages** (run once after installing vcpkg):
+```
+vcpkg install freetype:x64-windows sqlite3:x64-windows openssl:x64-windows
+```
+
+**Build and run:**
+```bat
+git submodule update --init --recursive
+build.bat   :: build only
+run.bat     :: build + run
+```
+
+Executable output: `build\bin\app.exe`
 
 ## Architecture
 
