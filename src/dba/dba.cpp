@@ -66,6 +66,10 @@ void dba::create_tables(DBAState& state) {
     try {
         (*state.db) << "ALTER TABLE result_runs ADD COLUMN system_prompt TEXT NOT NULL DEFAULT ''";
     } catch (...) {}
+
+    try {
+        (*state.db) << "ALTER TABLE result_runs ADD COLUMN title TEXT";
+    } catch (...) {}
 }
 
 bool dba::init(DBAState& state, const string& db_path)

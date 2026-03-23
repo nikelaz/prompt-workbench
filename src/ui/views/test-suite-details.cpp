@@ -21,32 +21,10 @@ void ui::views::test_suite_details(
 
     ui::components::page_header(router, fonts, "Test Suite");
 
-    if (ui::components::secondary_button("Edit")) {
-        vm::edit_test_suite::prepare(edit_test_suite_vm, *test_suites_vm.current_test_suite);
-        routing::push(router, routing::EDIT_TEST_SUITE);
-    }
-
-    ImGui::SameLine();
-
-    if (ui::components::secondary_button("Delete")) {
-        ImGui::OpenPopup("##delete_test_suite");
-    }
-
-    if (ui::components::confirm_dialog(
-        "##delete_test_suite",
-        "Delete Test Suite?",
-        "Are you sure you want to delete this test suite?\nThis action cannot be undone.",
-        "Delete"
-    )) {
-        dba::delete_test_suite(dba_state, test_suites_vm.current_test_suite->id);
-        test_suites_vm.current_test_suite = std::nullopt;
-        vm::test_suites::refresh(test_suites_vm, dba_state);
-        routing::push(router, routing::TEST_SUITES);
-    }
-
     if (!test_suites_vm.current_test_suite)
     {
         ImGui::Text("An unexpected error occured. Could not load the test suite");
+        return;
     }
 
     ImGui::TextDisabled("Title:");
@@ -67,58 +45,20 @@ void ui::views::test_suite_details(
     ImGui::TextDisabled("Model:");
     ImGui::TextWrapped("%s", test_suites_vm.current_test_suite->model.c_str());
 
-    ui::components::spacer(16.0f);
-
-    ImGui::Text("User Prompts");
-
     ui::components::spacer(8.0f);
 
-    if (ui::components::button("Create User Prompt"))
-    {
-        routing::push(router, routing::CREATE_USER_PROMPTS);
+    if (ui::components::secondary_button("Edit")) {
+        vm::edit_test_suite::prepare(edit_test_suite_vm, *test_suites_vm.current_test_suite);
+        routing::push(router, routing::EDIT_TEST_SUITE);
     }
 
-    ui::components::spacer(8.0f);
+    ImGui::SameLine();
 
-    for (UserPrompt user_prompt : user_prompt_details_vm.user_prompts)
-    {
-        if (
-            ui::components::card(
-                "user_prompt_" + std::to_string(user_prompt.id),
-                user_prompt.prompt,
-                std::nullopt,
-                std::nullopt
-            )
-        )
-        {
-            user_prompt_details_vm.current_user_prompt = user_prompt;
-            routing::push(router, routing::USER_PROMPT_DETAILS);
-        }
+    if (ui::components::secondary_button("Delete")) {
+        ImGui::OpenPopup("##delete_test_suite");
     }
 
-    ui::components::spacer(16.0f);
-
-    ImGui::Text("Result Runs");
-
-    ui::components::spacer(8.0f);
-
-    for (ResultRun result_run : user_prompt_details_vm.result_runs)
-    {
-        if (
-            ui::components::card(
-                "result_run_" + std::to_string(result_run.id),
-                result_run.date,
-                std::nullopt,
-                std::nullopt
-            )
-        )
-        {
-            vm::result_run_details::set_current_result_run(dba_state, result_run_details_vm, result_run);
-            routing::push(router, routing::RESULT_RUN_DETAILS);
-        }
-    }
-
-    ui::components::spacer(16.0f);
+    ImGui::SameLine();
 
     bool is_running = run_tests_vm.is_running.load();
     if (is_running) ImGui::BeginDisabled();
@@ -133,6 +73,33 @@ void ui::views::test_suite_details(
         ImGui::OpenPopup("##running_tests");
     }
     if (is_running) ImGui::EndDisabled();
+
+    if (ui::components::confirm_dialog(
+        "##delete_test_suite",
+        "Delete Test Suite?",
+        "Are you sure you want to delete this test suite?\nThis action cannot be undone.",
+        "Delete"
+    )) {
+        dba::delete_test_suite(dba_state, test_suites_vm.current_test_suite->id);
+        test_suites_vm.current_test_suite = std::nullopt;
+        vm::test_suites::refresh(test_suites_vm, dba_state);
+        routing::push(router, routing::TEST_SUITES);
+    }
+
+    ui::components::spacer(16.0f);
+
+
+    if (ui::components::card("user_prompts_nav", "User Prompts", std::nullopt, std::nullopt))
+    {
+      routing::push(router, routing::USER_PROMPTS_LIST);
+    }
+
+    ui::components::spacer(8.0f);
+
+    if (ui::components::card("result_runs_nav", "Result Runs", std::nullopt, std::nullopt))
+    {
+      routing::push(router, routing::RESULT_RUNS_LIST);
+    }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(24, 24));

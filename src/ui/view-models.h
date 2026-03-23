@@ -54,6 +54,9 @@ namespace vm
             std::vector<Answer> answers;
             std::optional<ResultRun> current_result_run;
             std::optional<Answer> current_answer;
+            std::optional<UserPrompt> current_user_prompt;
+            bool editing_title = false;
+            std::string title_edit_buffer = "";
         };
 
         ResultRunDetailsViewModel init(dba::DBAState& dba_state);

@@ -44,12 +44,26 @@ namespace ui {
             fonts::Fonts& fonts,
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm
         );
+        void user_prompts_list(
+            routing::Router& router,
+            fonts::Fonts& fonts,
+            vm::user_prompt::UserPromptViewModel& user_prompt_vm
+        );
         void create_user_prompts(
             routing::Router& router,
             dba::DBAState& dba_state,
             fonts::Fonts& fonts,
             vm::create_user_prompt::CreateUserPromptViewModel& test_suites_vm,
             vm::user_prompt::UserPromptViewModel& user_prompts_vm
+        );
+        void result_runs_list(
+            routing::Router& router,
+            dba::DBAState& dba_state,
+            fonts::Fonts& fonts,
+            vm::test_suites::TestSuitesViewModel& test_suites_vm,
+            vm::user_prompt::UserPromptViewModel& user_prompt_vm,
+            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
+            vm::run_tests::RunTestsViewModel& run_tests_vm
         );
         void result_run_details(
             routing::Router& router,

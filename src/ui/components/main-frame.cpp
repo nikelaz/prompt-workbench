@@ -170,6 +170,9 @@ void ui::components::main_frame(
                 case routing::USER_PROMPT_DETAILS:
                     ui::views::user_prompt_details(router, fonts, user_prompt_vm);
                     break;
+                case routing::USER_PROMPTS_LIST:
+                    ui::views::user_prompts_list(router, fonts, user_prompt_vm);
+                    break;
                 case routing::CREATE_USER_PROMPTS:
                     ui::views::create_user_prompts(
                         router,
@@ -178,6 +181,9 @@ void ui::components::main_frame(
                         create_user_prompt_vm,
                         user_prompt_vm
                     );
+                    break;
+                case routing::RESULT_RUNS_LIST:
+                    ui::views::result_runs_list(router, dba_state, fonts, test_suites_vm, user_prompt_vm, result_run_details_vm, run_tests_vm);
                     break;
                 case routing::RESULT_RUN_DETAILS:
                     ui::views::result_run_details(router, dba_state, fonts, result_run_details_vm, user_prompt_vm, compare_vm);

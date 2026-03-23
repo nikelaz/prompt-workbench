@@ -1,7 +1,8 @@
 # Tasks / Basic Roadmap
 
-* [ ] Edit result runs title for easier identification
-* [ ] Better UI and layouts of result runs, test suite details and user prompts
+* [x] Edit result runs title for easier identification
+* [x] Better UI and layouts of result runs, test suite details and user prompts
+* [ ] Edit/delete all types from the UI
 * [ ] Compile on Windows
 * [ ] Compile on macOS
 * [ ] Major refactoring and code review

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <optional>
 
 struct TestSuite
 {
@@ -28,6 +29,7 @@ struct ResultRun
     std::string date;
     int64_t test_suite_id;
     std::string system_prompt;
+    std::optional<std::string> title;
 };
 
 struct Answer
@@ -109,6 +111,7 @@ namespace dba
         std::optional<int64_t> test_suite_id
     );
     bool delete_result_run(DBAState& state, int64_t id);
+    bool update_result_run_title(DBAState& state, int64_t id, const std::string& title);
 
     // Answers
     std::optional<int64_t> create_answer(

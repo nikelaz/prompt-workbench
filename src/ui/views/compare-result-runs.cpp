@@ -10,9 +10,12 @@ void ui::views::compare_result_runs(
 {
     ui::components::page_header(router, fonts, "Compare");
 
-    ImGui::Text("Run A: %s", compare_vm.run_a.date.c_str());
+    std::string label_a = compare_vm.run_a.title.value_or(compare_vm.run_a.date);
+    std::string label_b = compare_vm.run_b.title.value_or(compare_vm.run_b.date);
+
+    ImGui::Text("Run A: %s", label_a.c_str());
     ImGui::SameLine();
-    ImGui::Text("   Run B: %s", compare_vm.run_b.date.c_str());
+    ImGui::Text("   Run B: %s", label_b.c_str());
 
     ui::components::spacer(12.0f);
 
@@ -23,8 +26,8 @@ void ui::views::compare_result_runs(
 
     if (ImGui::BeginTable("##system_prompts", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
     {
-        ImGui::TableSetupColumn(compare_vm.run_a.date.c_str(), ImGuiTableColumnFlags_WidthStretch);
-        ImGui::TableSetupColumn(compare_vm.run_b.date.c_str(), ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableSetupColumn(label_a.c_str(), ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableSetupColumn(label_b.c_str(), ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableHeadersRow();
 
         ImGui::TableNextRow();
@@ -48,8 +51,8 @@ void ui::views::compare_result_runs(
     ))
     {
         ImGui::TableSetupColumn("User Prompt",   ImGuiTableColumnFlags_WidthStretch);
-        ImGui::TableSetupColumn(compare_vm.run_a.date.c_str(), ImGuiTableColumnFlags_WidthStretch);
-        ImGui::TableSetupColumn(compare_vm.run_b.date.c_str(), ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableSetupColumn(label_a.c_str(), ImGuiTableColumnFlags_WidthStretch);
+        ImGui::TableSetupColumn(label_b.c_str(), ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableSetupColumn("Meaning Diff %", ImGuiTableColumnFlags_WidthFixed, 120.0f);
         ImGui::TableHeadersRow();
 

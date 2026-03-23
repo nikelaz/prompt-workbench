@@ -84,6 +84,8 @@ add_executable(app
     src/ui/views/test-suites.cpp
     src/ui/views/test-suite-details.cpp
     src/ui/views/user-prompt-details.cpp
+    src/ui/views/user-prompts-list.cpp
+    src/ui/views/result-runs-list.cpp
     src/ui/views/result-run-details.cpp
     src/ui/views/answer-details.cpp
     src/ui/views/compare-result-runs.cpp

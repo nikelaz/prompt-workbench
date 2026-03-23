@@ -20,8 +20,41 @@ void ui::views::result_run_details(
         return;
     }
 
-    ImGui::TextDisabled("Date:");
-    ImGui::TextWrapped("%s", result_run_details_vm.current_result_run->date.c_str());
+    if (result_run_details_vm.editing_title)
+    {
+        ui::components::input("Title", &result_run_details_vm.title_edit_buffer);
+        ui::components::spacer(4.0f);
+        if (ui::components::button("Save"))
+        {
+            dba::update_result_run_title(
+                dba_state,
+                result_run_details_vm.current_result_run->id,
+                result_run_details_vm.title_edit_buffer
+            );
+            result_run_details_vm.current_result_run->title = result_run_details_vm.title_edit_buffer;
+            result_run_details_vm.editing_title = false;
+            vm::user_prompt::refresh(user_prompt_vm, dba_state);
+        }
+        ImGui::SameLine();
+        if (ui::components::secondary_button("Cancel"))
+        {
+            result_run_details_vm.editing_title = false;
+        }
+    }
+    else
+    {
+        const ResultRun& run = *result_run_details_vm.current_result_run;
+        bool has_title = run.title.has_value();
+        ImGui::TextDisabled("Title:");
+        ImGui::TextWrapped("%s", has_title ? run.title->c_str() : run.date.c_str());
+        ImGui::SameLine();
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 7.0f);
+        if (ui::components::secondary_button("Edit"))
+        {
+            result_run_details_vm.title_edit_buffer = run.title.value_or(run.date);
+            result_run_details_vm.editing_title = true;
+        }
+    }
 
     ui::components::spacer(8.0f);
 
@@ -84,7 +117,8 @@ void ui::views::result_run_details(
         for (int i = 0; i < (int)other_runs.size(); i++)
         {
             bool is_selected = (selected_idx == i);
-            if (ImGui::Selectable(other_runs[i].date.c_str(), is_selected, ImGuiSelectableFlags_DontClosePopups))
+            std::string run_label = other_runs[i].title.value_or(other_runs[i].date);
+            if (ImGui::Selectable(run_label.c_str(), is_selected, ImGuiSelectableFlags_DontClosePopups))
                 selected_idx = i;
         }
 
@@ -137,6 +171,7 @@ void ui::views::result_run_details(
         ))
         {
             result_run_details_vm.current_answer = answer;
+            result_run_details_vm.current_user_prompt = dba::get_user_prompt(dba_state, answer.user_prompt_id);
             routing::push(router, routing::ANSWER_DETAILS);
         }
     }

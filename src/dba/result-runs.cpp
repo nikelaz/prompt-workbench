@@ -33,13 +33,13 @@ optional<int64_t> dba::create_result_run(
     }
 }
 
-optional<ResultRun> dba::get_result_run(DBAState& state, int64_t id) 
+optional<ResultRun> dba::get_result_run(DBAState& state, int64_t id)
 {
     optional<ResultRun> result;
 
     (*state.db) << R"(
         SELECT
-        date, test_suite_id, system_prompt
+        date, test_suite_id, system_prompt, title
         FROM result_runs
         WHERE id == ?;
     )"
@@ -47,7 +47,8 @@ optional<ResultRun> dba::get_result_run(DBAState& state, int64_t id)
         >> [&](
             string date,
             int64_t test_suite_id,
-            string system_prompt
+            string system_prompt,
+            optional<string> title
         )
         {
             result = ResultRun {
@@ -55,6 +56,7 @@ optional<ResultRun> dba::get_result_run(DBAState& state, int64_t id)
                 date,
                 test_suite_id,
                 system_prompt,
+                title,
             };
         };
 
@@ -67,7 +69,7 @@ vector<ResultRun> dba::get_all_result_runs(DBAState& state, int64_t test_suite_i
 
     (*state.db) << R"(
         SELECT
-        id, date, system_prompt
+        id, date, system_prompt, title
         FROM result_runs
         WHERE test_suite_id = ?;
     )"
@@ -75,15 +77,17 @@ vector<ResultRun> dba::get_all_result_runs(DBAState& state, int64_t test_suite_i
         >> [&](
             int64_t id,
             string date,
-            string system_prompt
+            string system_prompt,
+            optional<string> title
         )
         {
-            result_runs.emplace_back(
+            result_runs.emplace_back(ResultRun{
                 id,
                 date,
                 test_suite_id,
-                system_prompt
-            );
+                system_prompt,
+                title,
+            });
         };
 
     return result_runs;
@@ -155,7 +159,24 @@ bool dba::delete_result_run(DBAState& state, int64_t id)
             << id;
 
         return true;
-    } 
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+bool dba::update_result_run_title(DBAState& state, int64_t id, const string& title)
+{
+    try
+    {
+        (*state.db) << "UPDATE result_runs SET title = ? WHERE id = ?"
+            << title
+            << id;
+
+        return true;
+    }
     catch (const std::exception& e)
     {
         std::cerr << "Unexpected error: " << e.what() << std::endl;

@@ -23,6 +23,13 @@ void ui::views::answer_details(
         ui::components::spacer(8.0f);
     }
 
+    if (result_run_details_vm.current_user_prompt)
+    {
+        ImGui::TextDisabled("User Prompt:");
+        ImGui::TextWrapped("%s", result_run_details_vm.current_user_prompt->prompt.c_str());
+        ui::components::spacer(8.0f);
+    }
+
     ImGui::TextDisabled("Answer:");
     ImGui::TextWrapped("%s", result_run_details_vm.current_answer->answer.c_str());
 }
