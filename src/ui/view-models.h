@@ -4,6 +4,7 @@
 #include "errors.h"
 #include <atomic>
 #include <thread>
+#include <chrono>
 
 namespace vm
 {
@@ -13,9 +14,10 @@ namespace vm
         {
             std::vector<TestSuite> test_suites;
             std::optional<TestSuite> current_test_suite;
+            std::optional<int64_t> current_prompt_id;
         };
 
-        TestSuitesViewModel init(dba::DBAState& dba_state); 
+        TestSuitesViewModel init(dba::DBAState& dba_state);
         void set_current_test_suite(
             TestSuitesViewModel& test_suites_vm,
             dba::DBAState& dba_state,
@@ -24,7 +26,12 @@ namespace vm
         void refresh(
             TestSuitesViewModel& test_suites_vm,
             dba::DBAState& dba_state
-        );      
+        );
+        void refresh_for_prompt(
+            TestSuitesViewModel& test_suites_vm,
+            dba::DBAState& dba_state,
+            int64_t prompt_id
+        );
     }
 
     namespace user_prompt {
@@ -74,8 +81,6 @@ namespace vm
             errors::DisplayError title_error;
             std::string description = "";
             errors::DisplayError description_error;
-            std::string system_prompt = "";
-            errors::DisplayError system_prompt_error;
             std::string model = "";
             errors::DisplayError model_error;
             std::vector<std::string> available_models;
@@ -106,8 +111,6 @@ namespace vm
             errors::DisplayError title_error;
             std::string description = "";
             errors::DisplayError description_error;
-            std::string system_prompt = "";
-            errors::DisplayError system_prompt_error;
             std::string model = "";
             errors::DisplayError model_error;
             std::vector<std::string> available_models;
@@ -163,7 +166,8 @@ namespace vm
             RunTestsViewModel& vm,
             const TestSuite& suite,
             const std::vector<UserPrompt>& prompts,
-            const Settings& settings
+            const Settings& settings,
+            const std::string& system_prompt
         );
 
         void commit_if_done(
@@ -192,6 +196,63 @@ namespace vm
             const std::vector<UserPrompt>& user_prompts
         );
         void compute_similarities(CompareResultRunsViewModel& vm);
+    }
+
+    namespace prompt_editor {
+        struct ChatMessage {
+            std::string role; // "user" or "assistant"
+            std::string content;
+        };
+
+        struct PromptEditorViewModel {
+            std::vector<OpenPrompt> open_prompts;
+            std::optional<int64_t> active_prompt_id;
+            std::string active_file_content;
+            std::chrono::steady_clock::time_point last_edit_time;
+            bool content_dirty = false;
+
+            int active_tab = 0; // 0=Editor, 1=Test Suites
+
+            bool chat_open = false;
+            std::vector<ChatMessage> chat_history;
+            std::string chat_input;
+            std::string chat_model;
+            std::atomic<bool> chat_is_sending{false};
+            std::string chat_pending_response;
+            std::vector<std::string> chat_available_models;
+            std::atomic<bool> chat_models_loading{false};
+            bool chat_models_loaded = false;
+            int chat_model_selection = 0;
+
+            PromptEditorViewModel() = default;
+            PromptEditorViewModel(PromptEditorViewModel&& o) noexcept
+                : open_prompts(std::move(o.open_prompts))
+                , active_prompt_id(std::move(o.active_prompt_id))
+                , active_file_content(std::move(o.active_file_content))
+                , last_edit_time(o.last_edit_time)
+                , content_dirty(o.content_dirty)
+                , active_tab(o.active_tab)
+                , chat_open(o.chat_open)
+                , chat_history(std::move(o.chat_history))
+                , chat_input(std::move(o.chat_input))
+                , chat_model(std::move(o.chat_model))
+                , chat_is_sending(o.chat_is_sending.load())
+                , chat_pending_response(std::move(o.chat_pending_response))
+                , chat_available_models(std::move(o.chat_available_models))
+                , chat_models_loading(o.chat_models_loading.load())
+                , chat_models_loaded(o.chat_models_loaded)
+                , chat_model_selection(o.chat_model_selection)
+            {}
+        };
+
+        PromptEditorViewModel init(dba::DBAState&);
+        void open_file(PromptEditorViewModel&, dba::DBAState&, const std::string& path);
+        void set_active_prompt(PromptEditorViewModel&, dba::DBAState&, int64_t id);
+        void close_prompt(PromptEditorViewModel&, dba::DBAState&, int64_t id);
+        void save_if_dirty(PromptEditorViewModel&);
+        void send_chat_message(PromptEditorViewModel&, const Settings&);
+        void commit_chat_if_done(PromptEditorViewModel&);
+        void fetch_chat_models(PromptEditorViewModel&, const Settings&);
     }
 
     namespace  create_user_prompt {

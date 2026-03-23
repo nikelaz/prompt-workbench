@@ -2,6 +2,7 @@
 
 namespace routing {
     enum Route {
+        PROMPT_EDITOR,
         TEST_SUITES,
         TEST_SUITES_DETAILS,
         CREATE_TEST_SUITE,

@@ -11,7 +11,8 @@ void ui::views::result_runs_list(
     vm::test_suites::TestSuitesViewModel& test_suites_vm,
     vm::user_prompt::UserPromptViewModel& user_prompt_vm,
     vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
-    vm::run_tests::RunTestsViewModel& run_tests_vm
+    vm::run_tests::RunTestsViewModel& run_tests_vm,
+    const std::string& system_prompt
 )
 {
     if (test_suites_vm.current_test_suite) {
@@ -49,7 +50,8 @@ void ui::views::result_runs_list(
             run_tests_vm,
             *test_suites_vm.current_test_suite,
             user_prompt_vm.user_prompts,
-            settings
+            settings,
+            system_prompt
         );
         ImGui::OpenPopup("##running_tests");
     }

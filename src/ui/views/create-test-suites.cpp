@@ -35,18 +35,6 @@ void ui::views::create_test_suite(
 
     ui::components::spacer(12.0f);
 
-    ui::components::input_multiline(
-        "System Prompt",
-        &create_test_suite_vm.system_prompt
-    );
-
-    ui::components::input_error(
-        create_test_suite_vm.system_prompt_error,
-        fonts
-    );
-
-    ui::components::spacer(12.0f);
-
     if (!create_test_suite_vm.models_loaded && !create_test_suite_vm.models_loading.load()) {
         Settings s = dba::get_settings(dba_state);
         vm::create_test_suite::fetch_models(create_test_suite_vm, s);
@@ -85,7 +73,6 @@ void ui::views::create_test_suite(
         if (
             !create_test_suite_vm.title_error.has_error
             && !create_test_suite_vm.description_error.has_error
-            && !create_test_suite_vm.system_prompt_error.has_error
             && !create_test_suite_vm.model_error.has_error
         )
         {
@@ -99,7 +86,6 @@ void ui::views::create_test_suite(
 
             create_test_suite_vm.title = "";
             create_test_suite_vm.description = "";
-            create_test_suite_vm.system_prompt = "";
             create_test_suite_vm.model = "";
             create_test_suite_vm.models_loaded = false;
             create_test_suite_vm.models_loading.store(false);

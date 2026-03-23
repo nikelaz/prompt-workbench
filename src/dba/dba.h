@@ -14,6 +14,13 @@ struct TestSuite
     std::string description;
     std::string system_prompt;
     std::string model;
+    std::optional<int64_t> prompt_id;
+};
+
+struct OpenPrompt
+{
+    int64_t id;
+    std::string file_path;
 };
 
 struct UserPrompt
@@ -59,16 +66,18 @@ namespace dba
     bool init(DBAState& state, const std::string& db_path);
     void deinit(DBAState& state);
 
-    // Test Suites 
+    // Test Suites
     std::optional<int64_t> create_test_suite(
         DBAState& state,
-        const std::string& title, 
+        const std::string& title,
         const std::string& description,
         const std::string& system_prompt,
-        const std::string& model
+        const std::string& model,
+        std::optional<int64_t> prompt_id = std::nullopt
     );
     std::optional<TestSuite> get_test_suite(DBAState& state, int64_t id);
     std::vector<TestSuite> get_all_test_suites(DBAState& state);
+    std::vector<TestSuite> get_test_suites_for_prompt(DBAState& state, int64_t prompt_id);
     bool update_test_suite(
         DBAState& state,
         int64_t id,
@@ -135,4 +144,9 @@ namespace dba
     // Settings
     Settings get_settings(DBAState& state);
     void upsert_settings(DBAState& state, const std::string& api_endpoint, const std::string& api_key);
+
+    // Open Prompts
+    std::optional<int64_t> open_prompt(DBAState& state, const std::string& file_path);
+    std::vector<OpenPrompt> get_all_open_prompts(DBAState& state);
+    void close_prompt(DBAState& state, int64_t id);
 }

@@ -16,3 +16,6 @@
 [submodule "external/llama.cpp"]
 	path = external/llama.cpp
 	url = https://github.com/ggerganov/llama.cpp
+[submodule "external/nfd"]
+	path = external/nfd
+	url = https://github.com/btzy/nativefiledialog-extended.git

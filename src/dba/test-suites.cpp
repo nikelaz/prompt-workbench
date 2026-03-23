@@ -7,26 +7,40 @@ using std::vector;
 
 optional<int64_t> dba::create_test_suite(
     DBAState& state,
-    const string& title, 
+    const string& title,
     const string& description,
     const string& system_prompt,
-    const string& model
+    const string& model,
+    optional<int64_t> prompt_id
 )
 {
     try
     {
-        (*state.db) << R"(
-            INSERT INTO test_suites
-            (title, description, system_prompt, model)
-            values (?, ?, ?, ?)
-        )"
-            << title
-            << description
-            << system_prompt
-            << model;
+        if (prompt_id) {
+            (*state.db) << R"(
+                INSERT INTO test_suites
+                (title, description, system_prompt, model, prompt_id)
+                values (?, ?, ?, ?, ?)
+            )"
+                << title
+                << description
+                << system_prompt
+                << model
+                << *prompt_id;
+        } else {
+            (*state.db) << R"(
+                INSERT INTO test_suites
+                (title, description, system_prompt, model)
+                values (?, ?, ?, ?)
+            )"
+                << title
+                << description
+                << system_prompt
+                << model;
+        }
 
         return state.db->last_insert_rowid();
-    } 
+    }
     catch (const std::exception& e)
     {
         std::cerr << "Unexpected error: " << e.what() << std::endl;
@@ -144,6 +158,38 @@ bool dba::update_test_suite(
         std::cerr << "Unexpected error: " << e.what() << std::endl;
         return false;
     }
+}
+
+vector<TestSuite> dba::get_test_suites_for_prompt(DBAState& state, int64_t prompt_id)
+{
+    vector<TestSuite> test_suites;
+
+    (*state.db) << R"(
+        SELECT
+        id, title, description, system_prompt, model
+        FROM test_suites
+        WHERE prompt_id = ?;
+    )"
+        << prompt_id
+        >> [&](
+            int64_t id,
+            string title,
+            string description,
+            string system_prompt,
+            string model
+        )
+        {
+            test_suites.emplace_back(TestSuite{
+                id,
+                title,
+                description,
+                system_prompt,
+                model,
+                prompt_id
+            });
+        };
+
+    return test_suites;
 }
 
 bool dba::delete_test_suite(DBAState& state, int64_t id)

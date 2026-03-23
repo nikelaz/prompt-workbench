@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <ctime>
 #include <numeric>
+#include <fstream>
+#include <chrono>
 
 using std::vector;
 using std::optional;
@@ -23,9 +25,19 @@ void vm::test_suites::refresh(
     dba::DBAState& dba_state
 )
 {
-    vector<TestSuite> test_suites = 
+    vector<TestSuite> test_suites =
         dba::get_all_test_suites(dba_state);
     test_suites_vm.test_suites = test_suites;
+}
+
+void vm::test_suites::refresh_for_prompt(
+    TestSuitesViewModel& test_suites_vm,
+    dba::DBAState& dba_state,
+    int64_t prompt_id
+)
+{
+    test_suites_vm.test_suites = dba::get_test_suites_for_prompt(dba_state, prompt_id);
+    test_suites_vm.current_prompt_id = prompt_id;
 }
 
 void vm::test_suites::set_current_test_suite(
@@ -113,14 +125,16 @@ void vm::create_test_suite::create_test_suite(
         dba_state,
         create_test_suite_vm.title,
         create_test_suite_vm.description,
-        create_test_suite_vm.system_prompt,
-        create_test_suite_vm.model
+        "",
+        create_test_suite_vm.model,
+        test_suites_vm.current_prompt_id
     );
 
-    vm::test_suites::refresh(
-        test_suites_vm,
-        dba_state
-    );
+    if (test_suites_vm.current_prompt_id) {
+        vm::test_suites::refresh_for_prompt(test_suites_vm, dba_state, *test_suites_vm.current_prompt_id);
+    } else {
+        vm::test_suites::refresh(test_suites_vm, dba_state);
+    }
 }
 
 bool is_not_empty(const std::string& s)
@@ -137,15 +151,13 @@ bool has_max_length(
 }
 
 void vm::create_test_suite::validate(
-    CreateTestSuiteViewModel& create_test_suite_vm   
+    CreateTestSuiteViewModel& create_test_suite_vm
 )
 {
     create_test_suite_vm.title_error.has_error = false;
     create_test_suite_vm.title_error.message = "";
     create_test_suite_vm.description_error.has_error = false;
     create_test_suite_vm.description_error.message = "";
-    create_test_suite_vm.system_prompt_error.has_error = false;
-    create_test_suite_vm.system_prompt_error.message = "";
     create_test_suite_vm.model_error.has_error = false;
     create_test_suite_vm.model_error.message = "";
 
@@ -156,31 +168,18 @@ void vm::create_test_suite::validate(
             "Title is required";
     }
 
-    if (!has_max_length(
-        create_test_suite_vm.title,
-        255
-    ))  
+    if (!has_max_length(create_test_suite_vm.title, 255))
     {
         create_test_suite_vm.title_error.has_error = true;
-        create_test_suite_vm.title_error.message = 
+        create_test_suite_vm.title_error.message =
             "Title has to be less than 255 characters";
     }
 
-    if (!has_max_length(
-        create_test_suite_vm.description,
-        1000
-    ))
+    if (!has_max_length(create_test_suite_vm.description, 1000))
     {
         create_test_suite_vm.description_error.has_error = true;
         create_test_suite_vm.description_error.message =
             "Description has to be less than 1000 characters";
-    }
-
-    if (!is_not_empty(create_test_suite_vm.system_prompt))
-    {
-        create_test_suite_vm.system_prompt_error.has_error = true;
-        create_test_suite_vm.system_prompt_error.message =
-            "System prompt is required";
     }
 
     if (!is_not_empty(create_test_suite_vm.model))
@@ -218,6 +217,22 @@ void vm::create_test_suite::fetch_models(
     }).detach();
 }
 
+void vm::prompt_editor::fetch_chat_models(
+    PromptEditorViewModel& vm,
+    const Settings& settings
+)
+{
+    if (vm.chat_models_loading.load()) return;
+    vm.chat_models_loading.store(true);
+
+    std::thread([&vm, settings]() {
+        vm.chat_available_models = api::get_models(settings.api_endpoint, settings.api_key);
+        vm.chat_models_loaded = true;
+        vm.chat_models_loading.store(false);
+        glfwPostEmptyEvent();
+    }).detach();
+}
+
 void vm::edit_test_suite::prepare(
     EditTestSuiteViewModel& vm,
     const TestSuite& suite
@@ -226,7 +241,6 @@ void vm::edit_test_suite::prepare(
     vm.id = suite.id;
     vm.title = suite.title;
     vm.description = suite.description;
-    vm.system_prompt = suite.system_prompt;
     vm.model = suite.model;
     vm.models_loaded = false;
     vm.models_loading.store(false);
@@ -245,11 +259,15 @@ void vm::edit_test_suite::update_test_suite(
         vm.id,
         vm.title,
         vm.description,
-        vm.system_prompt,
+        std::nullopt,
         vm.model
     );
 
-    vm::test_suites::refresh(test_suites_vm, dba_state);
+    if (test_suites_vm.current_prompt_id) {
+        vm::test_suites::refresh_for_prompt(test_suites_vm, dba_state, *test_suites_vm.current_prompt_id);
+    } else {
+        vm::test_suites::refresh(test_suites_vm, dba_state);
+    }
 }
 
 void vm::edit_test_suite::validate(EditTestSuiteViewModel& vm)
@@ -258,8 +276,6 @@ void vm::edit_test_suite::validate(EditTestSuiteViewModel& vm)
     vm.title_error.message = "";
     vm.description_error.has_error = false;
     vm.description_error.message = "";
-    vm.system_prompt_error.has_error = false;
-    vm.system_prompt_error.message = "";
     vm.model_error.has_error = false;
     vm.model_error.message = "";
 
@@ -279,12 +295,6 @@ void vm::edit_test_suite::validate(EditTestSuiteViewModel& vm)
     {
         vm.description_error.has_error = true;
         vm.description_error.message = "Description has to be less than 1000 characters";
-    }
-
-    if (!is_not_empty(vm.system_prompt))
-    {
-        vm.system_prompt_error.has_error = true;
-        vm.system_prompt_error.message = "System prompt is required";
     }
 
     if (!is_not_empty(vm.model))
@@ -393,7 +403,8 @@ void vm::run_tests::run(
     RunTestsViewModel& vm,
     const TestSuite& suite,
     const std::vector<UserPrompt>& prompts,
-    const Settings& settings
+    const Settings& settings,
+    const std::string& system_prompt
 )
 {
     if (vm.is_running.load()) return;
@@ -403,7 +414,7 @@ void vm::run_tests::run(
     char buf[64];
     std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", local);
     vm.run_date = buf;
-    vm.system_prompt = suite.system_prompt;
+    vm.system_prompt = system_prompt;
 
     vm.pending_results.clear();
     vm.abort_requested.store(false);
@@ -411,7 +422,8 @@ void vm::run_tests::run(
     vm.total_count = static_cast<int>(prompts.size());
     vm.is_running.store(true);
 
-    std::thread([&vm, suite, prompts, settings]() {
+    std::string captured_system_prompt = system_prompt;
+    std::thread([&vm, suite, prompts, settings, captured_system_prompt]() {
         std::vector<RunResult> local_results;
         for (const auto& prompt : prompts) {
             if (vm.abort_requested.load()) break;
@@ -419,7 +431,7 @@ void vm::run_tests::run(
                 settings.api_endpoint,
                 settings.api_key,
                 suite.model,
-                suite.system_prompt,
+                captured_system_prompt,
                 prompt.prompt
             );
             std::vector<float> emb = embedding::compute(answer);
@@ -618,4 +630,141 @@ void vm::edit_user_prompt::validate(EditUserPromptViewModel& vm)
         vm.prompt_error.has_error = true;
         vm.prompt_error.message = "Prompt is required";
     }
+}
+
+vm::prompt_editor::PromptEditorViewModel vm::prompt_editor::init(dba::DBAState& dba_state)
+{
+    PromptEditorViewModel vm;
+    vm.open_prompts = dba::get_all_open_prompts(dba_state);
+    if (!vm.open_prompts.empty()) {
+        std::ifstream f(vm.open_prompts[0].file_path);
+        if (f.good()) {
+            vm.active_file_content = std::string(
+                std::istreambuf_iterator<char>(f),
+                std::istreambuf_iterator<char>()
+            );
+        }
+        vm.active_prompt_id = vm.open_prompts[0].id;
+    }
+    return vm;
+}
+
+void vm::prompt_editor::open_file(
+    PromptEditorViewModel& vm,
+    dba::DBAState& dba_state,
+    const std::string& path
+)
+{
+    auto id = dba::open_prompt(dba_state, path);
+    if (!id) return;
+
+    vm.open_prompts = dba::get_all_open_prompts(dba_state);
+
+    std::ifstream f(path);
+    vm.active_file_content = f.good()
+        ? std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>())
+        : "";
+    vm.active_prompt_id = *id;
+    vm.content_dirty = false;
+    vm.active_tab = 0;
+}
+
+void vm::prompt_editor::set_active_prompt(
+    PromptEditorViewModel& vm,
+    dba::DBAState& dba_state,
+    int64_t id
+)
+{
+    for (auto& p : vm.open_prompts) {
+        if (p.id == id) {
+            vm.active_prompt_id = id;
+            std::ifstream f(p.file_path);
+            vm.active_file_content = f.good()
+                ? std::string(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>())
+                : "";
+            vm.content_dirty = false;
+            vm.active_tab = 0;
+            return;
+        }
+    }
+}
+
+void vm::prompt_editor::close_prompt(
+    PromptEditorViewModel& vm,
+    dba::DBAState& dba_state,
+    int64_t id
+)
+{
+    save_if_dirty(vm);
+    dba::close_prompt(dba_state, id);
+    vm.open_prompts = dba::get_all_open_prompts(dba_state);
+
+    if (vm.active_prompt_id == id) {
+        if (!vm.open_prompts.empty()) {
+            set_active_prompt(vm, dba_state, vm.open_prompts[0].id);
+        } else {
+            vm.active_prompt_id = std::nullopt;
+            vm.active_file_content = "";
+        }
+    }
+}
+
+void vm::prompt_editor::save_if_dirty(PromptEditorViewModel& vm)
+{
+    if (!vm.content_dirty) return;
+    if (!vm.active_prompt_id) return;
+
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - vm.last_edit_time);
+    if (elapsed.count() < 500) return;
+
+    for (auto& p : vm.open_prompts) {
+        if (p.id == *vm.active_prompt_id) {
+            std::ofstream f(p.file_path, std::ios::trunc);
+            if (f.good()) {
+                f << vm.active_file_content;
+                vm.content_dirty = false;
+            }
+            break;
+        }
+    }
+}
+
+void vm::prompt_editor::send_chat_message(
+    PromptEditorViewModel& vm,
+    const Settings& settings
+)
+{
+    if (vm.chat_is_sending.load()) return;
+    if (vm.chat_input.empty()) return;
+
+    vm.chat_history.push_back({ "user", vm.chat_input });
+    std::string user_msg = vm.chat_input;
+    vm.chat_input = "";
+    vm.chat_is_sending.store(true);
+
+    std::string system_prompt = vm.active_file_content;
+    std::string model = vm.chat_model;
+
+    std::thread([&vm, settings, system_prompt, model, user_msg]() {
+        std::string response = api::openai_ask(
+            settings.api_endpoint,
+            settings.api_key,
+            model,
+            system_prompt,
+            user_msg
+        );
+        vm.chat_pending_response = std::move(response);
+        vm.chat_is_sending.store(false);
+        glfwPostEmptyEvent();
+    }).detach();
+}
+
+void vm::prompt_editor::commit_chat_if_done(PromptEditorViewModel& vm)
+{
+    if (vm.chat_is_sending.load()) return;
+    if (vm.chat_pending_response.empty()) return;
+
+    vm.chat_history.push_back({ "assistant", std::move(vm.chat_pending_response) });
+    vm.chat_pending_response = "";
 }

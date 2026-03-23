@@ -67,12 +67,23 @@ void dba::create_tables(DBAState& state) {
     (*state.db) << "CREATE INDEX IF NOT EXISTS idx_result_runs_test_suite ON result_runs(test_suite_id);";
     (*state.db) << "CREATE INDEX IF NOT EXISTS idx_answers_result_run ON answers(result_run_id);";
 
+    (*state.db) << R"(
+        CREATE TABLE IF NOT EXISTS open_prompts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        file_path TEXT NOT NULL UNIQUE
+        );
+    )";
+
     try {
         (*state.db) << "ALTER TABLE result_runs ADD COLUMN system_prompt TEXT NOT NULL DEFAULT ''";
     } catch (...) {}
 
     try {
         (*state.db) << "ALTER TABLE result_runs ADD COLUMN title TEXT";
+    } catch (...) {}
+
+    try {
+        (*state.db) << "ALTER TABLE test_suites ADD COLUMN prompt_id INTEGER REFERENCES open_prompts(id) ON DELETE SET NULL";
     } catch (...) {}
 }
 

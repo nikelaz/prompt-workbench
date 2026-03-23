@@ -11,6 +11,7 @@ set(CPR_CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE)
 set(STD_FS_SUPPORTED TRUE CACHE INTERNAL "" FORCE)
 add_subdirectory(external/cpr)
 add_subdirectory(external/json)
+add_subdirectory(external/nfd)
 
 # llama.cpp — disable unneeded targets
 set(LLAMA_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
@@ -68,6 +69,7 @@ find_package(SQLite3 REQUIRED)
 add_executable(app
     src/main.cpp
     src/app.cpp
+    external/imgui/misc/cpp/imgui_stdlib.cpp
     src/helpers.cpp
     src/api.cpp
     src/embedding.cpp
@@ -78,6 +80,7 @@ add_executable(app
     src/dba/result-runs.cpp
     src/dba/answers.cpp
     src/dba/settings.cpp
+    src/dba/open-prompts.cpp
     src/ui/theme.cpp
     src/ui/view-models.cpp
     src/ui/routing.cpp
@@ -106,9 +109,10 @@ add_executable(app
     src/ui/views/create-user-prompts.cpp
     src/ui/views/edit-user-prompt.cpp
     src/ui/views/api-credentials.cpp
+    src/ui/views/prompt-editor.cpp
 )
 
-target_include_directories(app PRIVATE src/ src/dba src/ui src/platform)
+target_include_directories(app PRIVATE src/ src/dba src/ui src/platform external/imgui/misc/cpp)
 
 target_include_directories(app PRIVATE
     ${CMAKE_SOURCE_DIR}/external/sqlite_modern_cpp
@@ -126,6 +130,7 @@ target_link_libraries(app PRIVATE
   cpr::cpr
   ${SQLite3_LIBRARIES}
   llama
+  nfd
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")

@@ -7,7 +7,22 @@
 #include "errors.h"
 
 namespace ui {
-    namespace views {        
+    namespace views {
+        void prompt_editor(
+            routing::Router& router,
+            dba::DBAState& dba_state,
+            fonts::Fonts& fonts,
+            vm::prompt_editor::PromptEditorViewModel& vm,
+            vm::test_suites::TestSuitesViewModel& test_suites_vm,
+            vm::user_prompt::UserPromptViewModel& user_prompt_vm,
+            vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
+            vm::create_test_suite::CreateTestSuiteViewModel& create_test_suite_vm,
+            vm::create_user_prompt::CreateUserPromptViewModel& create_user_prompt_vm,
+            vm::run_tests::RunTestsViewModel& run_tests_vm,
+            vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm,
+            vm::compare_result_runs::CompareResultRunsViewModel& compare_vm,
+            vm::edit_user_prompt::EditUserPromptViewModel& edit_user_prompt_vm
+        );
         void test_suites(
             routing::Router& router,
             dba::DBAState& dba_state,
@@ -23,7 +38,8 @@ namespace ui {
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
             vm::run_tests::RunTestsViewModel& run_tests_vm,
-            vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm
+            vm::edit_test_suite::EditTestSuiteViewModel& edit_test_suite_vm,
+            const std::string& system_prompt
         );
         void edit_test_suite(
             routing::Router& router,
@@ -72,7 +88,8 @@ namespace ui {
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
             vm::user_prompt::UserPromptViewModel& user_prompt_vm,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,
-            vm::run_tests::RunTestsViewModel& run_tests_vm
+            vm::run_tests::RunTestsViewModel& run_tests_vm,
+            const std::string& system_prompt
         );
         void result_run_details(
             routing::Router& router,
@@ -111,6 +128,7 @@ namespace ui {
         void main_frame(
             dba::DBAState& dba_state,
             fonts::Fonts& fonts,
+            vm::prompt_editor::PromptEditorViewModel& prompt_editor_vm,
             vm::test_suites::TestSuitesViewModel& test_suites_vm,
             vm::user_prompt::UserPromptViewModel& user_prompt_details_vm,
             vm::result_run_details::ResultRunDetailsViewModel& result_run_details_vm,

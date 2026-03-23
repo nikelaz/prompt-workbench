@@ -35,18 +35,6 @@ void ui::views::edit_test_suite(
 
     ui::components::spacer(12.0f);
 
-    ui::components::input_multiline(
-        "System Prompt",
-        &edit_test_suite_vm.system_prompt
-    );
-
-    ui::components::input_error(
-        edit_test_suite_vm.system_prompt_error,
-        fonts
-    );
-
-    ui::components::spacer(12.0f);
-
     if (!edit_test_suite_vm.models_loaded && !edit_test_suite_vm.models_loading.load()) {
         Settings s = dba::get_settings(dba_state);
         vm::edit_test_suite::fetch_models(edit_test_suite_vm, s);
@@ -85,7 +73,6 @@ void ui::views::edit_test_suite(
         if (
             !edit_test_suite_vm.title_error.has_error
             && !edit_test_suite_vm.description_error.has_error
-            && !edit_test_suite_vm.system_prompt_error.has_error
             && !edit_test_suite_vm.model_error.has_error
         )
         {

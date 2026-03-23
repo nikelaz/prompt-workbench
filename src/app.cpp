@@ -91,7 +91,10 @@ void app::render_loop(
 
     fonts::Fonts fonts = fonts::load(&io, app_state.dpi_scale);
 
-    vm::test_suites::TestSuitesViewModel test_suites_vm = 
+    vm::prompt_editor::PromptEditorViewModel prompt_editor_vm =
+        vm::prompt_editor::init(dba_state);
+
+    vm::test_suites::TestSuitesViewModel test_suites_vm =
         vm::test_suites::init(dba_state);
 
     vm::user_prompt::UserPromptViewModel user_prompt_details_vm =
@@ -133,6 +136,7 @@ void app::render_loop(
         ui::components::main_frame(
             dba_state,
             fonts,
+            prompt_editor_vm,
             test_suites_vm,
             user_prompt_details_vm,
             result_run_details_vm,
