@@ -30,7 +30,7 @@ Executable output: `./build/bin/app`
 
 **RHEL/Fedora:** `mesa-libGL-devel glfw-devel libX11-devel libXrandr-devel libXi-devel libXinerama-devel libXcursor-devel wayland-devel sqlite-devel openssl-devel`
 
-**Ubuntu/Debian:** `libgl1-mesa-dev libglfw3-dev libx11-dev libxrandr-dev libxi-dev libxinerama-dev libxcursor-dev libwayland-dev libsqlite3-dev libssl-dev`
+**Ubuntu/Debian:** `libgl1-mesa-dev libglfw3-dev libx11-dev libxrandr-dev libxi-dev libxinerama-dev libxcursor-dev libwayland-dev libsqlite3-dev libssl-dev libdbus-1-dev`
 
 ### Windows
 

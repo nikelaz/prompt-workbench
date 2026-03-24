@@ -44,7 +44,8 @@ sudo apt update
 sudo apt install build-essential cmake meson ninja-build \
     libwayland-dev wayland-protocols libxkbcommon-dev \
     libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
-    libgl1-mesa-dev libsqlite3-dev libunistring-dev libssl-dev
+    libgl1-mesa-dev libsqlite3-dev libunistring-dev libssl-dev \
+    pkg-config libfreetype6-dev
 ```
 
 ---

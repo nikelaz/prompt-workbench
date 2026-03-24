@@ -11,6 +11,9 @@ set(CPR_CURL_USE_LIBPSL OFF CACHE BOOL "" FORCE)
 set(STD_FS_SUPPORTED TRUE CACHE INTERNAL "" FORCE)
 add_subdirectory(external/cpr)
 add_subdirectory(external/json)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(NFD_PORTAL ON CACHE BOOL "" FORCE)
+endif()
 add_subdirectory(external/nfd)
 
 # llama.cpp — disable unneeded targets

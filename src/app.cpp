@@ -9,6 +9,7 @@
 #include "theme.h"
 #include "fonts.h"
 #include "embedding.h"
+#include <nfd.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -185,12 +186,14 @@ int app::init(AppState& state)
     }
 
     init_imgui(state);
+    NFD_Init();
 
     return 0;
 }
 
 void app::deinit()
 {
+    NFD_Quit();
     embedding::deinit();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
